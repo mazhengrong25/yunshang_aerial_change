@@ -5,7 +5,9 @@
     </div>
     <main-template>
       <div id="router-main">
-        <router-view />
+        <slot>
+           <router-view />
+        </slot>
       </div>
     </main-template>
   </div>
