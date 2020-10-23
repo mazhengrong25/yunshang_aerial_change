@@ -3,9 +3,11 @@
     <div id="header-template">
       <header-template />
     </div>
-    <div id="router-main">
-      <router-view />
-    </div>
+    <main-template>
+      <div id="router-main">
+        <router-view />
+      </div>
+    </main-template>
   </div>
 </template>
 
@@ -13,6 +15,7 @@
 export default {
   components: {
     headerTemplate: () => import("@/components/Header"),
+    mainTemplate: () => import("@/components/Template"),
   },
 };
 </script>
@@ -27,9 +30,6 @@ export default {
     flex-shrink: 0;
   }
   #router-main {
-    height: 100%;
-    background: #fff;
-    margin: 16px;
     overflow-y: auto;
     min-height: 500px;
   }
