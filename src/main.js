@@ -8,6 +8,8 @@ Vue.config.productionTip = false
 
 Vue.use(Antd);
 
+import 'ant-design-vue/lib/locale-provider/zh_CN';
+
 new Vue({
   router,
   render: h => h(App)

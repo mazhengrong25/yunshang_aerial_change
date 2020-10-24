@@ -50,7 +50,7 @@
     </div>
 
     <div class="table_tool">
-      <a-button>+新增</a-button>
+      <a-button @click="openProfitModal('add')">+新增</a-button>
       <a-button>批量启用</a-button>
       <a-button>批量停用</a-button>
     </div>
@@ -93,9 +93,42 @@
         </a-table-column>
       </a-table>
       <div class="table_pagination">
-        <a-pagination :show-total="total => `共 ${total} 条记录`" v-model="current" show-size-changer :total="profitData.length" />
+        <a-pagination
+          v-model="current"
+          show-size-changer
+          :total="profitData.length"
+        />
+        <div class="datas_total">
+          共 <span>{{ profitData.length }}</span> 条记录
+        </div>
       </div>
     </div>
+
+    <a-modal
+      :title="modalTitle"
+      :visible="profitVisible"
+      :confirm-loading="confirmLoading"
+      centered
+      @ok="submitBtn"
+      @cancel="cancelBtn"
+    >
+      <div class="profit_modal_main">
+        <div class="main_header">
+          <div class="modal_list">
+            <div class="modal_item">
+              <div class="item_title">配置状态</div>
+              <div class="item_input">
+                <a-switch
+                  v-model="modalForm.action"
+                  checked-children="启用"
+                  un-checked-children="停用"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </a-modal>
   </div>
 </template>
 
@@ -108,9 +141,17 @@ export default {
       filter_profilt: undefined, // 筛选利润中心
 
       profitData: [], // 表格数据
-      selectedRowKeys: [],
+      selectedRowKeys: [], // 表格多选列表
 
-      current: 1,
+      current: 1, // 分页index
+
+      profitVisible: false, // 新增/编辑弹窗
+      modalTitle: "新增", // 弹窗标题
+      confirmLoading: false, // 确定按钮加载动画
+
+      modalForm: {
+        action: false,
+      }
     };
   },
   methods: {
@@ -123,9 +164,29 @@ export default {
     editTable(val) {
       console.log(val);
     },
+    // 表格多选
     onSelectChange(val) {
       console.log(val);
       this.selectedRowKeys = val;
+    },
+
+    // 新增/修改弹窗
+    openProfitModal(type) {
+      this.profitVisible = true;
+    },
+
+    // 弹窗提交按钮
+    submitBtn() {
+      this.confirmLoading = true;
+      setTimeout(() => {
+        this.confirmLoading = false;
+        this.cancelBtn();
+        this.$message.success("保存成功");
+      }, 1000);
+    },
+    // 弹窗关闭按钮
+    cancelBtn() {
+      this.profitVisible = false;
     },
   },
   mounted() {
@@ -200,46 +261,40 @@ export default {
   }
 
   .table_main {
-    /deep/.ant-table-body {
-      table {
-        border-left: none;
-        .ant-table-thead {
-          th {
-            border-radius: 0;
-            background: #ebeff4;
-            &:last-child {
-              border-right: none;
-            }
-          }
-        }
-        .ant-table-tbody {
-          tr {
-            &:nth-child(even) {
-              background: #f5f7f9;
-              td {
-              }
-            }
-            td {
-              &:last-child {
-                border-right: none;
-              }
-            }
-          }
+    .table_pagination {
+      margin: 32px 0;
+      padding-right: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      .datas_total {
+        font-size: 12px;
+        font-weight: 400;
+        color: #999999;
+        span {
+          color: #333333;
         }
       }
     }
-    .table_pagination{
-      text-align: right;
-      margin: 32px 0;
-      padding-right: 16px;
+  }
+}
+.profit_modal_main {
+    .main_header {
+    }
+    .modal_list {
+      .modal_item {
+        display: flex;
+        align-items: center;
+        .item_title {
+          font-size: 14px;
+          font-weight: 400;
+          color: #333333;
+          margin-right: 8px;
+        }
+        .item_input{
+
+        }
+      }
     }
   }
-}
-
-/deep/.ant-switch {
-  min-width: 64px;
-  &.ant-switch-checked {
-    background-color: #5ab957;
-  }
-}
 </style>
