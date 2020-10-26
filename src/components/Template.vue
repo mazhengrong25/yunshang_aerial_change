@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2020-10-23 14:32:43
- * @LastEditTime: 2020-10-23 18:14:17
+ * @LastEditTime: 2020-10-26 17:59:51
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \positiond:\aerial\yunshang_aerial_change\src\components\Template.vue
@@ -69,10 +69,12 @@
       </a-space>
 
       <a-table :columns="columns" :data-source="data" :row-selection="rowSelection" bordered/>
-      <span slot="tags">
-      <a-tag color="#FB9826">{{ tag }}</a-tag>
-    </span>
-                 
+      <span slot="tags" >
+        <a-tag color="#FB9826"></a-tag>
+      </span>
+      <span slot="switchs">
+        <a-switch checked-children="启用" un-checked-children="停用" default-checked />
+      </span>
     </div>
   </div>
 </template>
@@ -102,8 +104,9 @@ const columns = [
   },
   {
     title: '启用/停用',
-    dataIndex: 'index',
-    key: 'index',
+    // dataIndex: 'index',
+    // key: 'index',
+    scopedSlots: { customRender: 'switchs' },
   },
 ];
 
