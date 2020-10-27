@@ -5,7 +5,7 @@
         <div class="list_title">来源类型</div>
         <div class="list_selece">
           <a-select
-            style="width: 120px"
+            style="width: 160px"
             placeholder="请选择"
             allowClear
             v-model="filter_type"
@@ -19,7 +19,7 @@
         <div class="list_title">具体来源</div>
         <div class="list_selece">
           <a-select
-            style="width: 120px"
+            style="width: 160px"
             placeholder="请选择"
             allowClear
             v-model="filter_source"
@@ -33,7 +33,7 @@
         <div class="list_title">利润中心</div>
         <div class="list_selece">
           <a-select
-            style="width: 120px"
+            style="width: 160px"
             placeholder="请选择"
             allowClear
             v-model="filter_profilt"
@@ -73,6 +73,12 @@
         </a-table-column>
         <a-table-column key="type" title="来源类型" data-index="type" />
         <a-table-column key="source" title="具体来源" data-index="source">
+
+          <a-tooltip placement="bottom">
+            <template slot-scope="text, record">
+              <span>{{ record.phone }}</span>
+            </template>
+          </a-tooltip>
           <template slot-scope="text, record">
             <span>{{ record.phone }}</span>
           </template>
@@ -123,6 +129,50 @@
                   checked-children="启用"
                   un-checked-children="停用"
                 />
+              </div>
+            </div>
+            <div class="modal_item">
+              <div class="item_title">来源类型</div>
+              <div class="item_input">
+                <a-select
+                  placeholder="请选择"
+                  allowClear
+                  style="width:240px"
+                >
+                  <a-select-option value="0"> 数据字典1 </a-select-option>
+                  <a-select-option value="1"> 数据字典2 </a-select-option>
+                </a-select>
+              </div>
+            </div>
+            <div class="modal_item">
+              <div class="item_title">利润中心</div>
+              <div class="item_input">
+                <a-select
+                  v-model="value"
+                  mode="multiple"
+                  style="width:240px"
+                  placeholder="请选择"
+                  option-label-prop="label"
+                >
+                  <a-select-option value="利润中心1" label="利润中心1">
+                    <span aria-label="利润中心1">利润中心1</span>
+                  </a-select-option>
+                  <a-select-option value="usa" label="1">
+                    <span aria-label="利润中心2">利润中心2</span>
+                  </a-select-option>
+                  <a-select-option value="japan" label="2">
+                    <span aria-label="利润中心3">利润中心3</span>
+                  </a-select-option>
+                  <a-select-option value="korea" label="3">
+                    <span aria-label="利润中心4">利润中心4</span>
+                  </a-select-option>
+                </a-select>
+              </div>
+            </div>
+            <div class="modal_item">
+              <div class="item_title">具体来源</div>
+              <div class="item_input">
+                <a-input  placeholder="请输入" />
               </div>
             </div>
           </div>
@@ -195,7 +245,7 @@ export default {
         key: i,
         type: "数据字典" + i,
         source: "具体来源" + i,
-        phone: i,
+        phone: "邮箱:"+'296324796@qq.com',
         profitCenter: "利润中心" + i,
         action: i % 2 === 0,
       });
@@ -285,6 +335,7 @@ export default {
       .modal_item {
         display: flex;
         align-items: center;
+        padding:10px 68px;
         .item_title {
           font-size: 14px;
           font-weight: 400;
@@ -292,9 +343,18 @@ export default {
           margin-right: 8px;
         }
         .item_input{
-
+            width: 240px;
+        }&:not(:last-child) {
+        margin-bottom: 5px;
         }
       }
+
     }
-  }
+    .ant-modal-body {
+      padding:68px;
+    }
+    .ant-modal-root {
+      width:440px;
+    }
+}
 </style>

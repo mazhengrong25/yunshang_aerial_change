@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2020-10-23 14:32:43
- * @LastEditTime: 2020-10-26 18:27:05
+ * @LastEditTime: 2020-10-27 13:38:36
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \positiond:\aerial\yunshang_aerial_change\src\components\Template.vue
@@ -23,70 +23,11 @@
 </template>
 
 <script>
-const columns = [
-  {
-    title: "操作",
-    dataIndex: "name",
-    key: "name",
-    scopedSlots: { customRender: "tags" },
-  },
-  {
-    title: "字典名称",
-    dataIndex: "age",
-    key: "age",
-  },
-  {
-    title: "字典类型",
-    dataIndex: "address",
-    key: "address",
-  },
-  {
-    title: "字典值",
-    dataIndex: "dic",
-    key: "dic",
-  },
-  {
-    title: "启用/停用",
-    // dataIndex: 'index',
-    // key: 'index',
-    scopedSlots: { customRender: "switchs" },
-  },
-];
 
-const data = [];
-for (let i = 0; i < 50; i++) {
-  data.push({
-    key: i.toString(),
-    name: `修改`,
-    age: 32,
-    address: `London Park no. ${i}`,
-    dic: 23,
-    index: 235,
-  });
-}
-
-const rowSelection = {
-  onChange: (selectedRowKeys, selectedRows) => {
-    console.log(
-      `selectedRowKeys: ${selectedRowKeys}`,
-      "selectedRows: ",
-      selectedRows
-    );
-  },
-  onSelect: (record, selected, selectedRows) => {
-    console.log(record, selected, selectedRows);
-  },
-  onSelectAll: (selected, selectedRows, changeRows) => {
-    console.log(selected, selectedRows, changeRows);
-  },
-};
 export default {
   data() {
     return {
-      size: "small", //控制按钮间距
-      data,
-      columns,
-      rowSelection,
+    
     };
   },
   methods: {
@@ -133,50 +74,6 @@ export default {
           margin-left: 16px;
         }
       }
-    }
-  }
-  .item {
-    padding: 0 16px;
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    .item_name {
-      display: inline-flex;
-      align-items: center;
-      margin-bottom: 22px;
-      font-weight: 400;
-      font-size: 14px;
-      &:not(:last-child) {
-        margin-right: 47px;
-      }
-      .item_input {
-        margin-left: 8px;
-      }
-      .ant-btn-primary {
-        border-radius: 17px;
-        width: 90px;
-      }
-    }
-  }
-  .action {
-    // height: 100%;
-    // .ant-table-thead > tr:nth-child(odd) {
-    //   // background:rgba(235, 239, 244, 1);
-    //   background-color: #0070E2;
-    // }
-    .ant-table > tr:nth-child(even) {
-      background-color: #0070e2;
-    }
-    .ant-space {
-      padding: 0 16px;
-    }
-    .ant-btn {
-      border: 1px solid #0070e2;
-      color: #0070e2;
-      border-radius: 15px;
-    }
-    .ant-table-wrapper {
-      padding-top: 20px;
     }
   }
 }

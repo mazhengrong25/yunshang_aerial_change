@@ -1,8 +1,8 @@
 /*
  * @Author: your name
  * @Date: 2020-10-23 14:08:59
- * @LastEditTime: 2020-10-26 18:25:19
- * @LastEditors: your name
+ * @LastEditTime: 2020-10-27 17:08:43
+ * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \positiond:\aerial\yunshang_aerial_change\src\router\index.js
  */
@@ -26,6 +26,11 @@ const routes = [
     path: '/dictionary',
     name: 'dictionary',
     component: () => import(/* webpackChunkName: "index" */ '../views/dictionary.vue')
+  },
+  {
+    path: '/rule',
+    name: 'rule',
+    component: () => import(/* webpackChunkName: "index" */ '../views/rule.vue')
   }
 ]
 

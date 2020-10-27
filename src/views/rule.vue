@@ -2,44 +2,55 @@
   <div class="profit">
     <div class="filter_header">
       <div class="filter_list">
-        <div class="list_title">字典类型</div>
-        <div class="list_selece">
-          <a-input style="width: 160px" placeholder="请输入" />
-        </div>
-      </div>
-      <div class="filter_list">
-        <div class="list_title">字典名称</div>
-        <div class="list_selece">
-          <a-input style="width: 160px" placeholder="请输入" />
-        </div>
-      </div>
-      <div class="filter_list">
-        <div class="list_title">字典值</div>
-        <div class="list_selece">
-          <a-input style="width: 160px" placeholder="请输入" />
-        </div>
-      </div>
-      <div class="filter_list">
-        <div class="list_title">是否启用</div>
+        <div class="list_title">来源渠道</div>
         <div class="list_selece">
           <a-select
             style="width: 160px"
             placeholder="请选择"
             allowClear
-            v-model="filter_use"
+            v-model="filter_channel"
           >
-            <a-select-option value="0"> 启用 </a-select-option>
-            <a-select-option value="1"> 停用 </a-select-option>
+            <a-select-option value="0"> 渠道1 </a-select-option>
+            <a-select-option value="1"> 渠道2 </a-select-option>
           </a-select>
         </div>
       </div>
+      <div class="filter_list">
+        <div class="list_title">利润中心</div>
+        <div class="list_selece">
+          <a-select
+            style="width: 160px"
+            placeholder="请选择"
+            allowClear
+            v-model="filter_profit"
+          >
+            <a-select-option value="0"> 利润中心1 </a-select-option>
+            <a-select-option value="1"> 利润中心2 </a-select-option>
+          </a-select>
+        </div>
+      </div>
+      <div class="filter_list">
+        <div class="list_title">规则</div>
+        <div class="list_selece">
+          <a-select
+            style="width: 160px"
+            placeholder="请选择"
+            allowClear
+            v-model="filter_rule"
+          >
+            <a-select-option value="0"> 规则1 </a-select-option>
+            <a-select-option value="1"> 规则2 </a-select-option>
+          </a-select>
+        </div>
+      </div>
+
       <a-button class="filter_btn" type="primary" @click="filterBtn"
         >搜索</a-button
       >
     </div>
 
     <div class="table_tool">
-      <a-button @click="openDictionModal('add')">+新增</a-button>
+      <a-button @click="openRuleModal('add')">+新增</a-button>
       <a-button>批量启用</a-button>
       <a-button>批量停用</a-button>
     </div>
@@ -48,7 +59,7 @@
       <a-table
         bordered
         size="middle"
-        :data-source="dictionData"
+        :data-source="ruleData"
         :rowSelection="{
           selectedRowKeys: selectedRowKeys,
           onChange: onSelectChange,
@@ -57,16 +68,13 @@
       >
         <a-table-column title="操作">
           <template slot-scope="record">
-            <a-tag color="#FB9826" @click="openDictionModal('edit')">修改</a-tag>
+            <a-tag color="#FB9826" @click="openRuleModal('edit')">修改</a-tag>
           </template>
         </a-table-column>
-        <a-table-column key="name" title="字典名称" data-index="name" />
-        <a-table-column key="type" title="字典类型" data-index="type" />
-        <a-table-column
-          key="value"
-          title="字典值"
-          data-index="value"
-        />
+        <a-table-column key="channel" title="来源渠道" data-index="channel" />
+        <a-table-column key="profit" title="利润中心" data-index="profit" />
+        <a-table-column key="rule" title="规则" data-index="rule"/>
+        <a-table-column key="infrom" title="是否通知" data-index="infrom" />
         <a-table-column key="action" title="启用/停用">
           <template slot-scope="text, record">
             <a-switch
@@ -81,28 +89,27 @@
         <a-pagination
           v-model="current"
           show-size-changer
-          :total="dictionData.length"
+          :total="ruleData.length"
         />
         <div class="datas_total">
-          共 <span>{{ dictionData.length }}</span> 条记录
+          共 <span>{{ ruleData.length }}</span> 条记录
         </div>
       </div>
     </div>
 
     <a-modal
       :title="modalTitle"
-      :visible="dictionVisible"
+      :visible="ruleVisible"
       :confirm-loading="confirmLoading"
       centered
       @ok="submitBtn"
       @cancel="cancelBtn"
-      style="width:440px"
     >
       <div class="profit_modal_main">
         <div class="main_header">
           <div class="modal_list">
             <div class="modal_item">
-              <div class="item_title">字典状态</div>
+              <div class="item_title">配置状态</div>
               <div class="item_input">
                 <a-switch
                   v-model="modalForm.action"
@@ -112,21 +119,51 @@
               </div>
             </div>
             <div class="modal_item">
-              <div class="item_title">字典名称</div>
+              <div class="item_title">来源渠道</div>
               <div class="item_input">
-                <a-input  placeholder="请输入" />
+                <a-select
+                  placeholder="请选择"
+                  allowClear
+                  style="width:240px"
+                >
+                  <a-select-option value="0"> 渠道1 </a-select-option>
+                  <a-select-option value="1"> 渠道2 </a-select-option>
+                </a-select>
               </div>
             </div>
             <div class="modal_item">
-              <div class="item_title">字典类型</div>
+              <div class="item_title">利润中心</div>
               <div class="item_input">
-                <a-input  placeholder="请输入" />
+                <a-select
+                  placeholder="请选择"
+                  allowClear
+                  style="width:240px"
+                >
+                  <a-select-option value="0"> 利润中心1 </a-select-option>
+                  <a-select-option value="1"> 利润中心2 </a-select-option>
+                </a-select>
               </div>
             </div>
             <div class="modal_item">
-              <div class="item_title">字典值</div>
+              <div class="item_title">规则</div>
               <div class="item_input">
-                <a-input  placeholder="请输入" />
+                <a-select
+                  placeholder="请选择"
+                  allowClear
+                  style="width:240px"
+                >
+                  <a-select-option value="0"> 规则1 </a-select-option>
+                  <a-select-option value="1"> 规则2 </a-select-option>
+                </a-select>
+              </div>
+            </div>
+            <div class="modal_item">
+              <div class="item_title">是否通知</div>
+              <div class="item_input">
+                <a-radio-group v-model="value" @change="onChange">
+                    <a-radio :value="1"> 是 </a-radio>
+                    <a-radio :value="2"> 否 </a-radio>
+                </a-radio-group>
               </div>
             </div>
           </div>
@@ -140,28 +177,30 @@
 export default {
   data() {
     return {
-      // filter_type: undefined, // 筛选来源类型
-      filter_use: undefined, // 筛选是否启用
-      filter_profilt: undefined, // 筛选利润中心
+      filter_channel: undefined, // 筛选来源渠道
+      filter_rule: undefined, // 筛选规则
+      filter_profit: undefined, // 筛选利润中心
 
-      dictionData: [], // 表格数据
+      ruleData: [], // 表格数据
       selectedRowKeys: [], // 表格多选列表
 
       current: 1, // 分页index
 
-      dictionVisible: false, // 新增/编辑弹窗
-      modalTitle: "新增字典", // 弹窗标题
+      ruleVisible: false, // 新增/编辑弹窗
+      modalTitle: "新增规则", // 弹窗标题
       confirmLoading: false, // 确定按钮加载动画
 
       modalForm: {
         action: false,
-      }
+      },
+
+      value: 1, //弹窗 是否通知
     };
   },
   methods: {
     // 搜索按钮
     filterBtn() {
-      console.log( this.filter_use);
+      console.log(this.filter_channel, this.filter_rule, this.filter_profit);
     },
 
     // 表格修改按钮
@@ -175,8 +214,8 @@ export default {
     },
 
     // 新增/修改弹窗
-    openDictionModal(type) {
-      this.dictionVisible = true;
+    openRuleModal(type) {
+      this.ruleVisible = true;
     },
 
     // 弹窗提交按钮
@@ -190,17 +229,23 @@ export default {
     },
     // 弹窗关闭按钮
     cancelBtn() {
-      this.dictionVisible = false;
+      this.ruleVisible = false;
+    },
+
+    // 弹窗中 是否通知点击
+    onChange(e) {
+      console.log('radio checked', e.target.value);
     },
   },
   mounted() {
     for (let i = 0; i < 22; i++) {
-      this.dictionData.push({
+      this.ruleData.push({
         key: i,
-        name: "字典1",
-        type: "类型1",
-        value: "123",
-        action: '',
+        channel: "渠道" + i,
+        profit: "利润中心" + i,
+        rule: "规则" + i,
+        infrom: "是",
+        action: i % 2 === 0,
       });
     }
   },
