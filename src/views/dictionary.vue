@@ -155,7 +155,8 @@ export default {
 
       modalForm: {
         action: false,
-      }
+      },
+      value:''
     };
   },
   methods: {
