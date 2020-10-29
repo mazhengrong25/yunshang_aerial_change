@@ -4,6 +4,10 @@ import App from './App';
 import 'ant-design-vue/dist/antd.css';
 import router from './router'
 
+import axios from '@/api/api'; // 导入http中创建的axios实例
+
+Vue.prototype.$axios = axios;
+
 Vue.config.productionTip = false
 
 Vue.use(Antd);

@@ -202,224 +202,113 @@
     @cancel="cancelBtn"
     width="1040px"
     >
-      <!-- <div class="email_modal_main">
-        <div class="main_header">
-          <div class="email_list">
-            <div class="email_item">
-              <div class="item_title">配置状态</div>
-              <div class="item_input">
-                <a-switch
-                  v-model="modalForm.action"
-                  checked-children="启用"
-                  un-checked-children="停用"
-                />
-              </div>
-            </div>
 
-            <div class="email_box">
-              <div class="email_item">
-                <div class="item_title">来源类型</div>
-                <div class="item_input">
-                  <a-select
-                    placeholder="请选择"
-                    allowClear
-                    style="width:240px"
-                  >
-                    <a-select-option value="0"> 数据字典1 </a-select-option>
-                    <a-select-option value="1"> 数据字典2 </a-select-option>
-                  </a-select>
-                </div>
-              </div>
-              <div class="email_item">
-                <div class="item_title">利润中心</div>
-                <div class="item_input">
-                  <a-select
-                    mode="multiple"
-                    :default-value="['a1', 'b2']"
-                    style="width: 100%"
-                    placeholder="请选择"
-                    @change="handleChange"
-                  >
-                    <a-select-option v-for="i in 25" :key="(i + 9).toString(36) + i">
-                      {{ (i + 9).toString(36) + i }}
-                    </a-select-option>
-                  </a-select>
-                </div>
-              </div>
-              <div class="email_item">
-                <div class="item_title">具体来源</div>
-                <div class="item_input">
-                  <a-input-group compact>
-                    <a-select default-value="0">
-                      <a-select-option value="0">
-                        手机
-                      </a-select-option>
-                      <a-select-option value="1" @click="openEmailModal('email')">
-                        邮箱
-                      </a-select-option>
-                    </a-select>
-                    <a-input style="width: 73%" default-value="请输入" allowClear/>
-                </a-input-group>
-                </div>
-              </div>
-            </div>
+    <div class="email_list">
 
-            <div class="email_box">
-              <div class="email_item">
-                <div class="item_title">端口</div>
-                <div class="item_input">
-                  <a-input />
-                </div>
-              </div>
-              <div class="email_item">
-                <div class="item_title">SLL</div>
-                <div class="item_input">
-                  <a-input />
-                </div>
-              </div>
-              <div class="email_item">
-                <div class="item_title">地址</div>
-                <div class="item_input">
-                   <a-input />
-                </div>
-              </div>
-            </div>
-
-            <div class="email_box">
-              <div class="email_item">
-                <div class="item_title">协议</div>
-                <div class="item_input">
-                  <a-input />
-                </div>
-              </div>
-              <div class="email_item">
-                <div class="item_title">秘匙</div>
-                <div class="item_input">
-                  <a-input />
-                </div>
-              </div>
-            </div>
-
-            <div class="email_box">
-              <div class="email_item">
-                <div class="item_title">模板</div>
-                <div class="item_input">
-                  <div class="item_card">
-
-                  </div>
-                </div>
-              </div>
-            </div>
+        <div class="email_box">
+          <div class="email_title">配置状态</div>
+          <div class="email_item">
+              <a-switch checked-children="启用" un-checked-children="停用" default-checked />
           </div>
         </div>
-      </div> -->
-    
-      <div class="email_list">
 
-          <div class="email_box">
-            <div class="email_title">配置状态</div>
-            <div class="email_item">
-                <a-switch checked-children="启用" un-checked-children="停用" default-checked />
-            </div>
+        <div class="email_box">
+
+          <div class="email_title_box">来源类型</div>
+          <div class="email_item_box">
+              <a-select
+                placeholder="请选择"
+                style="width: 240px"
+                @change="handleChange"
+              >
+                <a-select-option value="0">
+                  数据字典1
+                </a-select-option>
+                <a-select-option value="1">
+                  数据字典2
+                </a-select-option>
+              </a-select>
           </div>
 
-          <div class="email_box">
-
-            <div class="email_title_box">来源类型</div>
-            <div class="email_item_box">
-                <a-select
-                  placeholder="请选择"
-                  style="width: 240px"
-                  @change="handleChange"
-                >
-                  <a-select-option value="0">
-                    数据字典1
-                  </a-select-option>
-                  <a-select-option value="1">
-                    数据字典2
-                  </a-select-option>
-                </a-select>
-            </div>
-
-            <div class="email_title_box">利润中心</div>
-            <div class="email_item_box">
-                <a-select
-                  mode="multiple"
-                  :default-value="['a1', 'b2']"
-                  style="width: 240px"
-                  placeholder="请选择"
-                  @change="handleChange"
-                >
-                  <a-select-option v-for="i in 25" :key="(i + 9).toString(36) + i">
-                    {{ (i + 9).toString(36) + i }}
-                  </a-select-option>
-                </a-select>
-            </div>
-
-
-            <div class="email_title_box">具体来源</div>
-            <div class="email_item_box">
-                <a-input-group compact>
-                    <a-select default-value="0">
-                      <a-select-option value="0">
-                        手机
-                      </a-select-option>
-                      <a-select-option value="1" @click="openEmailModal('email')">
-                        邮箱
-                      </a-select-option>
-                    </a-select>
-                    <a-input style="width: 73%" default-value="请输入" allowClear/>
-                </a-input-group>
-            </div>
-
+          <div class="email_title_box">利润中心</div>
+          <div class="email_item_box">
+              <a-select
+                mode="multiple"
+                :default-value="['a1', 'b2']"
+                style="width: 240px"
+                placeholder="请选择"
+                @change="handleChange"
+              >
+                <a-select-option v-for="i in 25" :key="(i + 9).toString(36) + i">
+                  {{ (i + 9).toString(36) + i }}
+                </a-select-option>
+              </a-select>
           </div>
 
 
-          <div class="email_box">
-
-            <div class="email_title_box">端口</div>
-            <div class="email_item_box">
-                <a-input style="width:260px"></a-input>
-            </div>
-
-            <div class="email_title_box">SLL</div>
-            <div class="email_item_box">
-                <a-input style="width:260px"></a-input>
-            </div>
-
-
-            <div class="email_title_box">地址</div>
-            <div class="email_item_box">
-                <a-input style="width:260px"></a-input>
-            </div>
-
+          <div class="email_title_box">具体来源</div>
+          <div class="email_item_box">
+              <a-input-group compact>
+                  <a-select default-value="0">
+                    <a-select-option value="0">
+                      手机
+                    </a-select-option>
+                    <a-select-option value="1" @click="openEmailModal('email')">
+                      邮箱
+                    </a-select-option>
+                  </a-select>
+                  <a-input style="width: 73%" default-value="请输入" allowClear/>
+              </a-input-group>
           </div>
 
-          <div class="email_box">
+        </div>
 
-            <div class="email_title_box">协议</div>
-            <div class="email_item_box">
-                <a-input style="width:260px"></a-input>
-            </div>
 
-            <div class="email_title_box">秘匙</div>
-            <div class="email_item_box">
-                <a-input style="width:260px"></a-input>
-            </div>
+        <div class="email_box">
 
+          <div class="email_title_box">端口</div>
+          <div class="email_item_box">
+              <a-input style="width:260px"></a-input>
           </div>
 
-          <div class="email_box">
-
-            <div class="email_title_box">模板</div>
-            <div class="email_item_box">
-                <div class="email_card"></div>
-            </div>
-
-            
+          <div class="email_title_box">SLL</div>
+          <div class="email_item_box">
+              <a-input style="width:260px"></a-input>
           </div>
 
-      </div>
+
+          <div class="email_title_box">地址</div>
+          <div class="email_item_box">
+              <a-input style="width:260px"></a-input>
+          </div>
+
+        </div>
+
+        <div class="email_box">
+
+          <div class="email_title_box">协议</div>
+          <div class="email_item_box">
+              <a-input style="width:260px"></a-input>
+          </div>
+
+          <div class="email_title_box">秘匙</div>
+          <div class="email_item_box">
+              <a-input style="width:260px"></a-input>
+          </div>
+
+        </div>
+
+        <div class="email_box">
+
+          <div class="email_title_box">模板</div>
+          <div class="email_item_box">
+              <div class="email_card"></div>
+          </div>
+
+          
+        </div>
+
+    </div>
     </a-modal>
   </div>
 </template>
@@ -432,7 +321,11 @@ export default {
       filter_source: undefined, // 筛选具体来源
       filter_profilt: undefined, // 筛选利润中心
 
-      profitData: [], // 表格数据
+      profitData: {
+        profit_name:'', //利润中心名称
+      },
+        
+      
       selectedRowKeys: [], // 表格多选列表
 
       current: 1, // 分页index
@@ -450,6 +343,22 @@ export default {
     };
   },
   methods: {
+
+    getdata(){
+      let data ={
+          // profit_name:res.
+      }
+      this.$axios.post('/api/configureprofitcenterInfo/getpage',data)
+      .then(res =>{
+          console.log('分页查询',res.data.value.datas)
+          console.log('profitData',res.data.value.datas)
+          profitData = res.data.value.datas
+      })
+      .catch(res => {
+        console.log(res)
+      })
+    },
+
     // 搜索按钮
     filterBtn() {
       console.log(this.filter_type, this.filter_source, this.filter_profilt);
@@ -496,6 +405,7 @@ export default {
     }
   },
   mounted() {
+    this.getdata()
     for (let i = 0; i < 22; i++) {
       this.profitData.push({
         key: i,
@@ -586,8 +496,6 @@ export default {
 }
 // 新增弹窗
 .profit_modal_main {
-    .main_header {
-    }
     .modal_list {
       .modal_item {
         display: flex;
@@ -615,6 +523,7 @@ export default {
     }
 }
 
+// 邮箱新增弹窗
 .email_list {
   
   .email_item {
@@ -629,67 +538,13 @@ export default {
       margin-right: 21px;
       
       .email_card{
-        background-color: #ffffff;
+        width: 935px;
+        height: 232px;
+        background: #F1F3F5;
       }
     }
   }
 }&:not(:last-child) {
    margin-bottom: 16px;
 }
-// 多选框  邮箱
-// .email_modal_main {
-    
-//     .email_list {
-//       .email_box {
-
-//          display: flex;
-//          justify-content: space-between;
-//          align-items: flex-start;
-//         // border: 1px solid #DFDFDF;
-
-//         .email_item {
-//           display: flex;
-//           align-items: center;
-//           .item_title {
-//             font-size: 14px;
-//             font-weight: 400;
-//             color: #333333;
-//             margin-right: 8px;
-//           }
-//           .item_input{
-//               width: 260px;
-//           }
-//           .item_card {
-//             width: 956px;
-//             height: 232px;
-//             background-color: #F1F3F5;
-
-//           }
-//         }
-
-//       }
-//       .email_item {
-//         display: flex;
-//         align-items: center;
-//         .item_title {
-//           font-size: 14px;
-//           font-weight: 400;
-//           color: #333333;
-//           margin-right: 8px;
-//         }
-//         .item_input{
-//             width: 240px;
-//         }&:not(:last-child) {
-//             margin-bottom: 20px;
-//         }
-//       }
-
-//     }
-//     .ant-modal-body {
-//       padding:68px;
-//     }
-//     .ant-modal-root {
-//       width:440px;
-//     }
-// }
 </style>

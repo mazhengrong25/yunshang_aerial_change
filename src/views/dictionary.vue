@@ -140,7 +140,7 @@
 export default {
   data() {
     return {
-      // filter_type: undefined, // 筛选来源类型
+      
       filter_use: undefined, // 筛选是否启用
       filter_profilt: undefined, // 筛选利润中心
 
@@ -160,6 +160,17 @@ export default {
     };
   },
   methods: {
+     // 获取字典列表
+     getdata(){
+      this.$axios.post('/api/datadictitem/getListbytype',data)
+      .then(res =>{
+          console.log(res)
+      })
+      .catch(res => {
+        console.log(res)
+      })
+    },
+
     // 搜索按钮
     filterBtn() {
       console.log( this.filter_use);
