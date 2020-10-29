@@ -8,6 +8,8 @@
  */
 import axios from 'axios';
 
+import { message } from 'ant-design-vue';
+
 axios.defaults.baseURL = 'http://192.168.0.27:5005';
 
 let instance = axios.create({
@@ -27,32 +29,28 @@ instance.interceptors.request.use(
 // 响应拦截器
 instance.interceptors.response.use(
   (response) => {
-    console.log('获取config',response.config)
-    if(!response.config.headers.Authorization){
+    if (!response.config.headers.Authorization) {
       refresh(response.config);
+    }
+    if(!response.data.isSuccess){
+      message.warning(response.data.msg)
     }
     return response;
   },
   (error) => {
-    console.log('response error :' + error);
-    if (error.response) {
-      let config = error.config;
-      refresh(config);
-      return;
-    }
-    return Promise.reject(error); // 返回接口返回的错误信息
+    message.error('接口数据错误，请联系管理员处理。错误信息：' + error);
+    return Promise.reject(error);
   }
 );
 
 // 获取token
 function refresh(config) {
   axios
-  .get('api/token/authenticate')
-  .then((res) => {
-    console.log('获取token')
-    if (res.data.token) {
+    .get('api/token/authenticate')
+    .then((res) => {
+      console.log('获取token');
+      if (res.data.token) {
         //重新保存token
-        console.log(res.data.token)
         localStorage.setItem('token', res.data.token);
         //需要重新执行
         instance(config);

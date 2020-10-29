@@ -24,8 +24,7 @@
             allowClear
             v-model="filter_profit"
           >
-            <a-select-option value="0"> 利润中心1 </a-select-option>
-            <a-select-option value="1"> 利润中心2 </a-select-option>
+            <a-select-option v-for="(item, index) in profitCenterList" :key="index" :value="item.code"> {{item.name}} </a-select-option>
           </a-select>
         </div>
       </div>
@@ -60,6 +59,7 @@
         bordered
         size="middle"
         :data-source="ruleData"
+        rowKey="id"
         :rowSelection="{
           selectedRowKeys: selectedRowKeys,
           onChange: onSelectChange,
@@ -71,16 +71,28 @@
             <a-tag color="#FB9826" @click="openRuleModal('edit')">修改</a-tag>
           </template>
         </a-table-column>
-        <a-table-column key="channel" title="来源渠道" data-index="channel" />
-        <a-table-column key="profit" title="利润中心" data-index="profit" />
-        <a-table-column key="rule" title="规则" data-index="rule"/>
-        <a-table-column key="infrom" title="是否通知" data-index="infrom" />
+        <a-table-column key="source" title="来源渠道" data-index="source" />
+        <a-table-column
+          key="profitCenterName"
+          title="利润中心"
+          data-index="profitCenterName"
+        />
+        <a-table-column key="rule" title="规则" data-index="rule" />
+        <!-- <a-table-column key="IsNotice" title="是否通知" data-index="IsNotice" /> -->
+
+        <a-table-column key="IsNotice" title="是否通知" data-index="IsNotice">
+          <template slot-scope="text, record">
+            {{ text ? "是" : "否" }}
+          </template>
+        </a-table-column>
+
         <a-table-column key="action" title="启用/停用">
           <template slot-scope="text, record">
             <a-switch
-              v-model="record.action"
+              :defaultChecked="record.isEnable === '1'"
               checked-children="启用"
               un-checked-children="停用"
+              @click="isEnableData(record.isEnable, record)"
             />
           </template>
         </a-table-column>
@@ -89,10 +101,10 @@
         <a-pagination
           v-model="current"
           show-size-changer
-          :total="ruleData.length"
+          :total="currentTotal"
         />
         <div class="datas_total">
-          共 <span>{{ ruleData.length }}</span> 条记录
+          共 <span>{{ currentTotal }}</span> 条记录
         </div>
       </div>
     </div>
@@ -112,7 +124,7 @@
               <div class="item_title">配置状态</div>
               <div class="item_input">
                 <a-switch
-                  v-model="modalForm.action"
+                  v-model="modalForm.IsEnable"
                   checked-children="启用"
                   un-checked-children="停用"
                 />
@@ -121,24 +133,17 @@
             <div class="modal_item">
               <div class="item_title">来源渠道</div>
               <div class="item_input">
-                <a-select
-                  placeholder="请选择"
-                  allowClear
-                  style="width:240px"
-                >
-                  <a-select-option value="0"> 渠道1 </a-select-option>
-                  <a-select-option value="1"> 渠道2 </a-select-option>
+                <a-select placeholder="请选择" allowClear style="width: 240px">
+                  <a-select-option value="mobile"> 手机号 </a-select-option>
+                  <a-select-option value="Email"> 邮箱 </a-select-option>
+                  <a-select-option value="sms"> 黑屏 </a-select-option>
                 </a-select>
               </div>
             </div>
             <div class="modal_item">
               <div class="item_title">利润中心</div>
               <div class="item_input">
-                <a-select
-                  placeholder="请选择"
-                  allowClear
-                  style="width:240px"
-                >
+                <a-select placeholder="请选择" allowClear style="width: 240px">
                   <a-select-option value="0"> 利润中心1 </a-select-option>
                   <a-select-option value="1"> 利润中心2 </a-select-option>
                 </a-select>
@@ -147,11 +152,7 @@
             <div class="modal_item">
               <div class="item_title">规则</div>
               <div class="item_input">
-                <a-select
-                  placeholder="请选择"
-                  allowClear
-                  style="width:240px"
-                >
+                <a-select placeholder="请选择" allowClear style="width: 240px">
                   <a-select-option value="0"> 规则1 </a-select-option>
                   <a-select-option value="1"> 规则2 </a-select-option>
                 </a-select>
@@ -161,8 +162,8 @@
               <div class="item_title">是否通知</div>
               <div class="item_input">
                 <a-radio-group v-model="value" @change="onChange">
-                    <a-radio :value="1"> 是 </a-radio>
-                    <a-radio :value="2"> 否 </a-radio>
+                  <a-radio :value="1"> 是 </a-radio>
+                  <a-radio :value="2"> 否 </a-radio>
                 </a-radio-group>
               </div>
             </div>
@@ -184,7 +185,10 @@ export default {
       ruleData: [], // 表格数据
       selectedRowKeys: [], // 表格多选列表
 
+      profitCenterList: [], // 利润中心列表
+
       current: 1, // 分页index
+      currentTotal: 1, // 页面数据总数
 
       ruleVisible: false, // 新增/编辑弹窗
       modalTitle: "新增规则", // 弹窗标题
@@ -198,6 +202,40 @@ export default {
     };
   },
   methods: {
+    // 获取规则列表
+    getData() {
+      let data = {
+        PageNo: 1,
+        PageSize: 10,
+        QueryInfo: {
+          Source: "mobile", //类型：String  必有字段  备注：来源渠道（如手机：mobile ，邮件：Email）
+        },
+      };
+      this.$axios
+        .post("api/ConfigureProfitCenterRuleInfo/getpage", data)
+        .then((res) => {
+          if (res.data.isSuccess) {
+            this.ruleData = res.data.value.datas;
+            this.current = res.data.value.pageCount;
+            this.currentTotal = res.data.value.totalCount;
+          }
+        });
+    },
+
+    // 获取利润中心列表
+    getProfitCenter() {
+      let data = {
+        messagetype: "yatp_get_profitCenter_tree_info",
+      };
+      this.$axios
+        .get("/api/ExternalAPI/GetYatpProfitCenter", { params: data })
+        .then((res) => {
+          if(res.data.isSuccess){
+            this.profitCenterList = res.data.value
+          }
+        });
+    },
+
     // 搜索按钮
     filterBtn() {
       console.log(this.filter_channel, this.filter_rule, this.filter_profit);
@@ -211,6 +249,20 @@ export default {
     onSelectChange(val) {
       console.log(val);
       this.selectedRowKeys = val;
+    },
+
+    // 单条数据停用启用
+    isEnableData(status, val) {
+      console.log(status, val);
+      let data = {
+        ID: val.id,
+        IsEnable: status === "1" ? 0 : 1,
+      };
+      this.$axios
+        .post("api/ConfigureProfitCenterRuleInfo/BatchUpdateState", data)
+        .then((res) => {
+          console.log(res);
+        });
     },
 
     // 新增/修改弹窗
@@ -234,20 +286,12 @@ export default {
 
     // 弹窗中 是否通知点击
     onChange(e) {
-      console.log('radio checked', e.target.value);
+      console.log("radio checked", e.target.value);
     },
   },
-  mounted() {
-    for (let i = 0; i < 22; i++) {
-      this.ruleData.push({
-        key: i,
-        channel: "渠道" + i,
-        profit: "利润中心" + i,
-        rule: "规则" + i,
-        infrom: "是",
-        action: i % 2 === 0,
-      });
-    }
+  created() {
+    this.getData();
+    this.getProfitCenter();
   },
 };
 </script>
@@ -327,32 +371,32 @@ export default {
   }
 }
 .profit_modal_main {
-    .main_header {
-    }
-    .modal_list {
-      .modal_item {
-        display: flex;
-        align-items: center;
-        padding:10px 68px;
-        .item_title {
-          font-size: 14px;
-          font-weight: 400;
-          color: #333333;
-          margin-right: 8px;
-        }
-        .item_input{
-            width: 240px;
-        }&:not(:last-child) {
-        margin-bottom: 5px;
-        }
+  .main_header {
+  }
+  .modal_list {
+    .modal_item {
+      display: flex;
+      align-items: center;
+      padding: 10px 68px;
+      .item_title {
+        font-size: 14px;
+        font-weight: 400;
+        color: #333333;
+        margin-right: 8px;
       }
-
+      .item_input {
+        width: 240px;
+      }
+      &:not(:last-child) {
+        margin-bottom: 5px;
+      }
     }
-    .ant-modal-body {
-      padding:68px;
-    }
-    .ant-modal-root {
-      width:440px;
-    }
+  }
+  .ant-modal-body {
+    padding: 68px;
+  }
+  .ant-modal-root {
+    width: 440px;
+  }
 }
 </style>

@@ -4,13 +4,13 @@ import App from './App';
 import 'ant-design-vue/dist/antd.css';
 import router from './router'
 
-import axios from '@/api/api'; // 导入http中创建的axios实例
+Vue.use(Antd);
 
-Vue.prototype.$axios = axios;
 
 Vue.config.productionTip = false
 
-Vue.use(Antd);
+import axios from '@/api/api'; // 导入http中创建的axios实例
+Vue.prototype.$axios = axios;
 
 import 'ant-design-vue/lib/locale-provider/zh_CN';
 
