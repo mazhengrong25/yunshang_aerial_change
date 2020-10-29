@@ -3,7 +3,7 @@ import axios from 'axios';
 axios.defaults.baseURL = 'http://192.168.0.27:5005';
 
 let instance = axios.create({
-  // timeout: 1000 * 12,
+  timeout: 1000 * 12,
 });
 
 // 请求拦截器
@@ -38,15 +38,15 @@ instance.interceptors.response.use(
 
 // 获取token
 function refresh(config) {
-  console.log('获取token')
   axios
-    .get('api/token/authenticate')
-    .then((res) => {
-      if (res.data.token) {
+  .get('api/token/authenticate')
+  .then((res) => {
+    console.log('获取token')
+    if (res.data.token) {
         //重新保存token
         localStorage.setItem('token', res.data.token);
         //需要重新执行
-        axios(config);
+        instance(config);
       } else {
         window.location.reload();
       }

@@ -31,6 +31,11 @@ const routes = [
     path: '/rule',
     name: 'rule',
     component: () => import(/* webpackChunkName: "index" */ '../views/rule.vue')
+  },
+  {
+    path: '/dynamicLibrary',
+    name: 'dynamicLibrary',
+    component: () => import(/* webpackChunkName: "index" */ '../views/dynamicLibrary.vue')
   }
 ]
 
