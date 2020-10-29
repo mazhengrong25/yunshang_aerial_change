@@ -202,7 +202,7 @@
     @cancel="cancelBtn"
     width="1040px"
     >
-      <div class="email_modal_main">
+      <!-- <div class="email_modal_main">
         <div class="main_header">
           <div class="email_list">
             <div class="email_item">
@@ -312,6 +312,113 @@
             </div>
           </div>
         </div>
+      </div> -->
+    
+      <div class="email_list">
+
+          <div class="email_box">
+            <div class="email_title">配置状态</div>
+            <div class="email_item">
+                <a-switch checked-children="启用" un-checked-children="停用" default-checked />
+            </div>
+          </div>
+
+          <div class="email_box">
+
+            <div class="email_title_box">来源类型</div>
+            <div class="email_item_box">
+                <a-select
+                  placeholder="请选择"
+                  style="width: 240px"
+                  @change="handleChange"
+                >
+                  <a-select-option value="0">
+                    数据字典1
+                  </a-select-option>
+                  <a-select-option value="1">
+                    数据字典2
+                  </a-select-option>
+                </a-select>
+            </div>
+
+            <div class="email_title_box">利润中心</div>
+            <div class="email_item_box">
+                <a-select
+                  mode="multiple"
+                  :default-value="['a1', 'b2']"
+                  style="width: 240px"
+                  placeholder="请选择"
+                  @change="handleChange"
+                >
+                  <a-select-option v-for="i in 25" :key="(i + 9).toString(36) + i">
+                    {{ (i + 9).toString(36) + i }}
+                  </a-select-option>
+                </a-select>
+            </div>
+
+
+            <div class="email_title_box">具体来源</div>
+            <div class="email_item_box">
+                <a-input-group compact>
+                    <a-select default-value="0">
+                      <a-select-option value="0">
+                        手机
+                      </a-select-option>
+                      <a-select-option value="1" @click="openEmailModal('email')">
+                        邮箱
+                      </a-select-option>
+                    </a-select>
+                    <a-input style="width: 73%" default-value="请输入" allowClear/>
+                </a-input-group>
+            </div>
+
+          </div>
+
+
+          <div class="email_box">
+
+            <div class="email_title_box">端口</div>
+            <div class="email_item_box">
+                <a-input style="width:260px"></a-input>
+            </div>
+
+            <div class="email_title_box">SLL</div>
+            <div class="email_item_box">
+                <a-input style="width:260px"></a-input>
+            </div>
+
+
+            <div class="email_title_box">地址</div>
+            <div class="email_item_box">
+                <a-input style="width:260px"></a-input>
+            </div>
+
+          </div>
+
+          <div class="email_box">
+
+            <div class="email_title_box">协议</div>
+            <div class="email_item_box">
+                <a-input style="width:260px"></a-input>
+            </div>
+
+            <div class="email_title_box">秘匙</div>
+            <div class="email_item_box">
+                <a-input style="width:260px"></a-input>
+            </div>
+
+          </div>
+
+          <div class="email_box">
+
+            <div class="email_title_box">模板</div>
+            <div class="email_item_box">
+                <div class="email_card"></div>
+            </div>
+
+            
+          </div>
+
       </div>
     </a-modal>
   </div>
@@ -507,64 +614,82 @@ export default {
       width:440px;
     }
 }
-// 多选框  邮箱
-.email_modal_main {
+
+.email_list {
+  
+  .email_item {
+    margin-left: 8px;
+  }
+  .email_box {
+    display: flex;
     
-    .email_list {
-      .email_box {
-
-         display: flex;
-         justify-content: space-between;
-        //  border-bottom: 1px solid #eaeaea;
-
-        .email_item {
-          display: flex;
-          align-items: center;
-          // padding:10px 68px;
-          .item_title {
-            font-size: 14px;
-            font-weight: 400;
-            color: #333333;
-            margin-right: 8px;
-          }
-          .item_input{
-              width: 240px;
-          }&:not(:last-child) {
-            // margin-bottom: 20px;
-            // margin-right: 40px;
-          }
-          .item_card {
-            width: 956px;
-            height: 232px;
-            background-color: #F1F3F5;
-
-          }
-        }
-
+   
+    .email_item_box {
+      margin-left: 8px;
+      margin-right: 21px;
+      
+      .email_card{
+        background-color: #ffffff;
       }
-      .email_item {
-        display: flex;
-        align-items: center;
-        // padding:10px 68px;
-        .item_title {
-          font-size: 14px;
-          font-weight: 400;
-          color: #333333;
-          margin-right: 8px;
-        }
-        .item_input{
-            width: 240px;
-        }&:not(:last-child) {
-        margin-bottom: 5px;
-        }
-      }
-
     }
-    .ant-modal-body {
-      padding:68px;
-    }
-    .ant-modal-root {
-      width:440px;
-    }
+  }
+}&:not(:last-child) {
+   margin-bottom: 16px;
 }
+// 多选框  邮箱
+// .email_modal_main {
+    
+//     .email_list {
+//       .email_box {
+
+//          display: flex;
+//          justify-content: space-between;
+//          align-items: flex-start;
+//         // border: 1px solid #DFDFDF;
+
+//         .email_item {
+//           display: flex;
+//           align-items: center;
+//           .item_title {
+//             font-size: 14px;
+//             font-weight: 400;
+//             color: #333333;
+//             margin-right: 8px;
+//           }
+//           .item_input{
+//               width: 260px;
+//           }
+//           .item_card {
+//             width: 956px;
+//             height: 232px;
+//             background-color: #F1F3F5;
+
+//           }
+//         }
+
+//       }
+//       .email_item {
+//         display: flex;
+//         align-items: center;
+//         .item_title {
+//           font-size: 14px;
+//           font-weight: 400;
+//           color: #333333;
+//           margin-right: 8px;
+//         }
+//         .item_input{
+//             width: 240px;
+//         }&:not(:last-child) {
+//             margin-bottom: 20px;
+//         }
+//       }
+
+//     }
+//     .ant-modal-body {
+//       padding:68px;
+//     }
+//     .ant-modal-root {
+//       width:440px;
+//     }
+// }
 </style>
