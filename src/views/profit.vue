@@ -479,8 +479,6 @@ export default {
 }
 // 新增弹窗
 .profit_modal_main {
-    .main_header {
-    }
     .modal_list {
       .modal_item {
         display: flex;
@@ -529,9 +527,6 @@ export default {
           }
           .item_input{
               width: 240px;
-          }&:not(:last-child) {
-            // margin-bottom: 20px;
-            // margin-right: 40px;
           }
           .item_card {
             width: 956px;
