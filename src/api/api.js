@@ -1,8 +1,8 @@
 /*
  * @Author: your name
  * @Date: 2020-10-29 10:30:51
- * @LastEditTime: 2020-10-29 11:20:41
- * @LastEditors: your name
+ * @LastEditTime: 2020-10-29 16:44:30
+ * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \positiond:\aerial\yunshang_aerial_change\src\api\api.js
  */
@@ -19,8 +19,8 @@ let instance = axios.create({
 // 请求拦截器
 instance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
-    token && (config.headers.Authorization = 'Bearer ' + token);
+    // const token = localStorage.getItem('token');
+    // token && (config.headers.Authorization = 'Bearer ' + token);
     return config;
   },
   (error) => Promise.error(error)
@@ -29,9 +29,9 @@ instance.interceptors.request.use(
 // 响应拦截器
 instance.interceptors.response.use(
   (response) => {
-    if (!response.config.headers.Authorization) {
-      refresh(response.config);
-    }
+    // if (!response.config.headers.Authorization) {
+    //   refresh(response.config);
+    // }
     if(!response.data.isSuccess){
       message.warning(response.data.msg)
     }

@@ -57,16 +57,14 @@
       >
         <a-table-column title="操作">
           <template slot-scope="record">
-            <a-tag color="#FB9826" @click="openDictionModal('edit')">修改</a-tag>
+            <a-tag color="#FB9826" @click="openDictionModal('edit')"
+              >修改</a-tag
+            >
           </template>
         </a-table-column>
         <a-table-column key="name" title="字典名称" data-index="name" />
         <a-table-column key="type" title="字典类型" data-index="type" />
-        <a-table-column
-          key="value"
-          title="字典值"
-          data-index="value"
-        />
+        <a-table-column key="value" title="字典值" data-index="value" />
         <a-table-column key="action" title="启用/停用">
           <template slot-scope="text, record">
             <a-switch
@@ -114,19 +112,19 @@
             <div class="modal_item">
               <div class="item_title">字典名称</div>
               <div class="item_input">
-                <a-input  placeholder="请输入" />
+                <a-input placeholder="请输入" />
               </div>
             </div>
             <div class="modal_item">
               <div class="item_title">字典类型</div>
               <div class="item_input">
-                <a-input  placeholder="请输入" />
+                <a-input placeholder="请输入" />
               </div>
             </div>
             <div class="modal_item">
               <div class="item_title">字典值</div>
               <div class="item_input">
-                <a-input  placeholder="请输入" />
+                <a-input placeholder="请输入" />
               </div>
             </div>
           </div>
@@ -140,7 +138,6 @@
 export default {
   data() {
     return {
-      
       filter_use: undefined, // 筛选是否启用
       filter_profilt: undefined, // 筛选利润中心
 
@@ -156,24 +153,39 @@ export default {
       modalForm: {
         action: false,
       },
-      value:''
+      value: "",
     };
   },
   methods: {
-     // 获取字典列表
-     getdata(){
-      this.$axios.post('/api/datadictitem/getListbytype',data)
-      .then(res =>{
-          console.log(res)
-      })
-      .catch(res => {
-        console.log(res)
-      })
+    getToken() {
+      this.$axios.get("api/token/authenticate").then((res) => {
+        this.$axios.defaults.headers.Authorization = 'Bearer ' + res.data.token
+        this.getdata();
+      });
+    },
+
+    // 获取字典列表
+    getdata() {
+      let data = {
+        PageNo: 1,
+        PageSize: 5,
+        QueryInfo: {
+          Type: "type", //类型：String  可有字段  备注：字典类型
+          Name: "name", //类型：String  可有字段  备注：字典名称
+          Value: "value", //类型：String  可有字段  备注：字典数值
+          IsEnable: true, //类型：Boolean  可有字段  备注：是否可用，为null查询所有 1:显示可用 2:显示禁用
+        },
+      };
+      this.$axios.post("/api/datadictitem/getpage", data).then((res) => {
+        if (res.data.isSuccess) {
+          console.log(res);
+        }
+      });
     },
 
     // 搜索按钮
     filterBtn() {
-      console.log( this.filter_use);
+      console.log(this.filter_use);
     },
 
     // 表格修改按钮
@@ -205,16 +217,9 @@ export default {
       this.dictionVisible = false;
     },
   },
-  mounted() {
-    for (let i = 0; i < 22; i++) {
-      this.dictionData.push({
-        key: i,
-        name: "字典1",
-        type: "类型1",
-        value: "123",
-        action: '',
-      });
-    }
+
+  created() {
+    this.getToken();
   },
 };
 </script>
@@ -294,32 +299,32 @@ export default {
   }
 }
 .profit_modal_main {
-    .main_header {
-    }
-    .modal_list {
-      .modal_item {
-        display: flex;
-        align-items: center;
-        padding:10px 68px;
-        .item_title {
-          font-size: 14px;
-          font-weight: 400;
-          color: #333333;
-          margin-right: 8px;
-        }
-        .item_input{
-            width: 240px;
-        }&:not(:last-child) {
-        margin-bottom: 5px;
-        }
+  .main_header {
+  }
+  .modal_list {
+    .modal_item {
+      display: flex;
+      align-items: center;
+      padding: 10px 68px;
+      .item_title {
+        font-size: 14px;
+        font-weight: 400;
+        color: #333333;
+        margin-right: 8px;
       }
-
+      .item_input {
+        width: 240px;
+      }
+      &:not(:last-child) {
+        margin-bottom: 5px;
+      }
     }
-    .ant-modal-body {
-      padding:68px;
-    }
-    .ant-modal-root {
-      width:440px;
-    }
+  }
+  .ant-modal-body {
+    padding: 68px;
+  }
+  .ant-modal-root {
+    width: 440px;
+  }
 }
 </style>

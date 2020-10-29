@@ -256,7 +256,7 @@
                     <a-select-option value="0">
                       手机
                     </a-select-option>
-                    <a-select-option value="1" @click="openEmailModal('email')">
+                    <a-select-option value="1">
                       邮箱
                     </a-select-option>
                   </a-select>
@@ -305,7 +305,12 @@
 
           <div class="email_title_box">模板</div>
           <div class="email_item_box">
-              <div class="email_card"></div>
+              <div class="email_card">
+                 <div class="card_title">模板名称:</div>
+                 <div class="card_title">发件人域:</div>
+                 <div class="card_title">发件人地址正则:</div>
+                 <div class="card_title">主题正则:</div>
+              </div>
           </div>
 
           
@@ -543,7 +548,10 @@ export default {
       .email_card{
         width: 935px;
         height: 232px;
-        background: #F1F3F5;
+        padding: 16px 12px ;
+        background: #F1F3F5; 
+        overflow-y:scroll;
+  
       }
     }
   }
