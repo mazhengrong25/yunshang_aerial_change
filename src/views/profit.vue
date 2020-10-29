@@ -96,8 +96,11 @@
         <a-table-column
           key="profitCenter"
           title="利润中心"
-          data-index="profitCenter"
-        />
+          data-index="profitCenterName"
+          
+        >
+          {{this.profitData.profit_name}}
+        </a-table-column>
         <a-table-column key="action" title="启用/停用">
           <template slot-scope="text, record">
             <a-switch
@@ -346,13 +349,13 @@ export default {
 
     getdata(){
       let data ={
-          // profit_name:res.
+          profit_name:this.profitData.profitCenterName
       }
       this.$axios.post('/api/configureprofitcenterInfo/getpage',data)
       .then(res =>{
           console.log('分页查询',res.data.value.datas)
           console.log('profitData',res.data.value.datas)
-          profitData = res.data.value.datas
+          this.profitData = res.data.value.datas
       })
       .catch(res => {
         console.log(res)
@@ -412,7 +415,7 @@ export default {
         type: "数据字典" + i,
         source: "具体来源" + i,
         phone: "邮箱:"+'296324796@qq.com',
-        profitCenter: "利润中心" + i,
+        profitCenterName: "利润中心" + i,
         action: i % 2 === 0,
       });
     }
