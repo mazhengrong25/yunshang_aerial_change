@@ -49,6 +49,7 @@
         bordered
         size="middle"
         :data-source="dictionData"
+        rowKey="id"
         :rowSelection="{
           selectedRowKeys: selectedRowKeys,
           onChange: onSelectChange,
@@ -57,7 +58,7 @@
       >
         <a-table-column title="操作">
           <template slot-scope="record">
-            <a-tag color="#FB9826" @click="openDictionModal('edit')"
+            <a-tag color="#FB9826" 
               >修改</a-tag
             >
           </template>
@@ -65,7 +66,7 @@
         <a-table-column key="name" title="字典名称" data-index="name" />
         <a-table-column key="type" title="字典类型" data-index="type" />
         <a-table-column key="value" title="字典值" data-index="value" />
-        <a-table-column key="action" title="启用/停用">
+        <a-table-column key="action" title="启用/停用" data-index="isEnable">
           <template slot-scope="text, record">
             <a-switch
               v-model="record.action"
@@ -112,19 +113,19 @@
             <div class="modal_item">
               <div class="item_title">字典名称</div>
               <div class="item_input">
-                <a-input placeholder="请输入" />
+                <a-input v-model="input_name" placeholder="请输入" />
               </div>
             </div>
             <div class="modal_item">
               <div class="item_title">字典类型</div>
               <div class="item_input">
-                <a-input placeholder="请输入" />
+                <a-input v-model="input_type" placeholder="请输入" />
               </div>
             </div>
             <div class="modal_item">
               <div class="item_title">字典值</div>
               <div class="item_input">
-                <a-input placeholder="请输入" />
+                <a-input v-model="input_value" placeholder="请输入" />
               </div>
             </div>
           </div>
@@ -153,10 +154,14 @@ export default {
       modalForm: {
         action: false,
       },
+      input_name:'',  // 字典名称
+      input_type:'', // 字典类型
+      input_value:'', // 字典值
       value: "",
     };
   },
   methods: {
+
     getToken() {
       this.$axios.get("api/token/authenticate").then((res) => {
         this.$axios.defaults.headers.Authorization = 'Bearer ' + res.data.token
@@ -169,16 +174,11 @@ export default {
       let data = {
         PageNo: 1,
         PageSize: 5,
-        QueryInfo: {
-          Type: "type", //类型：String  可有字段  备注：字典类型
-          Name: "name", //类型：String  可有字段  备注：字典名称
-          Value: "value", //类型：String  可有字段  备注：字典数值
-          IsEnable: true, //类型：Boolean  可有字段  备注：是否可用，为null查询所有 1:显示可用 2:显示禁用
-        },
       };
       this.$axios.post("/api/datadictitem/getpage", data).then((res) => {
+        console.log('字典',res);
         if (res.data.isSuccess) {
-          console.log(res);
+          this.dictionData = res.data.value.datas;
         }
       });
     },
@@ -201,6 +201,19 @@ export default {
     // 新增/修改弹窗
     openDictionModal(type) {
       this.dictionVisible = true;
+      let data = {
+
+          Type:this.input_type,                //类型：String  必有字段  备注：字典类型
+          Name: this.input_name,                //类型：String  必有字段  备注：字典名称
+          Value: this.input_value,                //类型：String  必有字段  备注：字典值
+          IsEnable:this.action                //类型：Boolean  必有字段  备注：是否启用
+      };
+      this.$axios.post('/api/datadictitem/save',data).then((res) => {
+          if (res.data.isSuccess) {
+              this.getdata();
+          }
+          // this.getdata();
+      })
     },
 
     // 弹窗提交按钮
@@ -296,7 +309,13 @@ export default {
         }
       }
     }
+
+    .ant-table-tbody > tr.ant-table-ant-table-row-level-0 :hover > td{
+        background: #0070E2; 
+        opacity: 0.1;
+    }
   }
+
 }
 .profit_modal_main {
   .main_header {
@@ -326,5 +345,13 @@ export default {
   .ant-modal-root {
     width: 440px;
   }
+}
+
+.table_main{
+
+    .ant-table-tbody > tr.ant-table-row:hover > td{
+        background: #0070E2; 
+        opacity: 0.1;
+    }
 }
 </style>
