@@ -70,6 +70,7 @@
           <template slot-scope="text, record">
             <a-switch
               v-model="record.action"
+              :defaultChecked="record.isEnable === 'true'"
               checked-children="启用"
               un-checked-children="停用"
             />
@@ -80,10 +81,10 @@
         <a-pagination
           v-model="current"
           show-size-changer
-          :total="dictionData.length"
+          :total="currentTotal"
         />
         <div class="datas_total">
-          共 <span>{{ dictionData.length }}</span> 条记录
+          共 <span>{{ currentTotal }}</span> 条记录
         </div>
       </div>
     </div>
@@ -146,6 +147,7 @@ export default {
       selectedRowKeys: [], // 表格多选列表
 
       current: 1, // 分页index
+      currentTotal: 1, // 页面数据总数
 
       dictionVisible: false, // 新增/编辑弹窗
       modalTitle: "新增字典", // 弹窗标题
@@ -154,9 +156,11 @@ export default {
       modalForm: {
         action: false,
       },
+      action: false,
       input_name:'',  // 字典名称
       input_type:'', // 字典类型
       input_value:'', // 字典值
+
       value: "",
     };
   },
@@ -179,6 +183,8 @@ export default {
         console.log('字典',res);
         if (res.data.isSuccess) {
           this.dictionData = res.data.value.datas;
+          this.current = res.data.value.pageCount;
+          this.currentTotal = res.data.value.totalCount;
         }
       });
     },
@@ -206,13 +212,12 @@ export default {
           Type:this.input_type,                //类型：String  必有字段  备注：字典类型
           Name: this.input_name,                //类型：String  必有字段  备注：字典名称
           Value: this.input_value,                //类型：String  必有字段  备注：字典值
-          IsEnable:this.action                //类型：Boolean  必有字段  备注：是否启用
+          IsEnable:this.modalForm.action                //类型：Boolean  必有字段  备注：是否启用
       };
       this.$axios.post('/api/datadictitem/save',data).then((res) => {
           if (res.data.isSuccess) {
               this.getdata();
           }
-          // this.getdata();
       })
     },
 
@@ -310,10 +315,12 @@ export default {
       }
     }
 
-    .ant-table-tbody > tr.ant-table-ant-table-row-level-0 :hover > td{
+    .ant-table-body > tbody.ant-table-tbody > tr.ant-table-row :hover {
         background: #0070E2; 
-        opacity: 0.1;
+        // opacity: 0.1;
     }
+
+    // .ant-table-tbody > tr:hover:not(.ant-table-row) > td { background: white; }
   }
 
 }

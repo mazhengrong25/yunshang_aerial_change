@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-10-23 14:08:59
- * @LastEditTime: 2020-10-27 17:08:43
+ * @LastEditTime: 2020-10-30 14:18:06
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \positiond:\aerial\yunshang_aerial_change\src\router\index.js
@@ -36,6 +36,11 @@ const routes = [
     path: '/dynamicLibrary',
     name: 'dynamicLibrary',
     component: () => import(/* webpackChunkName: "index" */ '../views/dynamicLibrary.vue')
+  },
+   {
+    path: '/changeNotice',
+    name: 'changeNotice',
+    component: () => import(/* webpackChunkName: "index" */ '../views/changeNotice.vue')
   }
 ]
 
