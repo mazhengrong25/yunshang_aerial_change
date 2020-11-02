@@ -1,22 +1,44 @@
+<!--
+ * @Description: 数据字典
+ * @Author: wish.WuJunLong
+ * @Date: 2020-10-27 09:59:47
+ * @LastEditTime: 2020-10-28 14:12:12
+ * @LastEditors: wish.WuJunLong 
+-->
 <template>
   <div class="profit">
     <div class="filter_header">
       <div class="filter_list">
         <div class="list_title">字典类型</div>
         <div class="list_selece">
-          <a-input style="width: 160px" placeholder="请输入" />
+          <a-input
+            allowClear
+            style="width: 160px"
+            v-model="input_type"
+            placeholder="请输入"
+          />
         </div>
       </div>
       <div class="filter_list">
         <div class="list_title">字典名称</div>
         <div class="list_selece">
-          <a-input style="width: 160px" placeholder="请输入" />
+          <a-input
+            allowClear
+            style="width: 160px"
+            v-model="input_name"
+            placeholder="请输入"
+          />
         </div>
       </div>
       <div class="filter_list">
         <div class="list_title">字典值</div>
         <div class="list_selece">
-          <a-input style="width: 160px" placeholder="请输入" />
+          <a-input
+            allowClear
+            style="width: 160px"
+            v-model="input_value"
+            placeholder="请输入"
+          />
         </div>
       </div>
       <div class="filter_list">
@@ -39,9 +61,9 @@
     </div>
 
     <div class="table_tool">
-      <a-button @click="openDictionModal('add')">+新增</a-button>
-      <a-button>批量启用</a-button>
-      <a-button>批量停用</a-button>
+      <a-button @click="openDictionModal('add',{})">+新增</a-button>
+      <a-button @click="batchBtn(true)">批量启用</a-button>
+      <a-button @click="batchBtn(false)">批量停用</a-button>
     </div>
 
     <div class="table_main">
@@ -58,7 +80,7 @@
       >
         <a-table-column title="操作">
           <template slot-scope="record">
-            <a-tag color="#FB9826" 
+            <a-tag color="#FB9826" @click="openDictionModal('edit', record)"
               >修改</a-tag
             >
           </template>
@@ -66,20 +88,22 @@
         <a-table-column key="name" title="字典名称" data-index="name" />
         <a-table-column key="type" title="字典类型" data-index="type" />
         <a-table-column key="value" title="字典值" data-index="value" />
-        <a-table-column key="action" title="启用/停用" data-index="isEnable">
+        <a-table-column key="isEnable" title="启用/停用" data-index="isEnable">
           <template slot-scope="text, record">
             <a-switch
-              v-model="record.action"
-              :defaultChecked="record.isEnable === 'true'"
+              v-model="record.isEnable"
               checked-children="启用"
               un-checked-children="停用"
+              @change="editTableStatus(record)"
             />
           </template>
         </a-table-column>
       </a-table>
       <div class="table_pagination">
         <a-pagination
-          v-model="current"
+          @change="jumpPagination"
+          @showSizeChange="editPageSize"
+          v-model="page"
           show-size-changer
           :total="currentTotal"
         />
@@ -90,13 +114,13 @@
     </div>
 
     <a-modal
-      :title="modalTitle"
+      :title="modalTitle + '字典'"
       :visible="dictionVisible"
       :confirm-loading="confirmLoading"
       centered
       @ok="submitBtn"
       @cancel="cancelBtn"
-      style="width:440px"
+      style="width: 440px"
     >
       <div class="profit_modal_main">
         <div class="main_header">
@@ -114,19 +138,19 @@
             <div class="modal_item">
               <div class="item_title">字典名称</div>
               <div class="item_input">
-                <a-input v-model="input_name" placeholder="请输入" />
+                <a-input v-model="modalForm.input_name" placeholder="请输入" />
               </div>
             </div>
             <div class="modal_item">
               <div class="item_title">字典类型</div>
               <div class="item_input">
-                <a-input v-model="input_type" placeholder="请输入" />
+                <a-input :disabled="diction_visible_type === 'edit'" v-model="modalForm.input_type" placeholder="请输入" />
               </div>
             </div>
             <div class="modal_item">
               <div class="item_title">字典值</div>
               <div class="item_input">
-                <a-input v-model="input_value" placeholder="请输入" />
+                <a-input :disabled="diction_visible_type === 'edit'" v-model="modalForm.input_value" placeholder="请输入" />
               </div>
             </div>
           </div>
@@ -146,29 +170,29 @@ export default {
       dictionData: [], // 表格数据
       selectedRowKeys: [], // 表格多选列表
 
-      current: 1, // 分页index
-      currentTotal: 1, // 页面数据总数
-
       dictionVisible: false, // 新增/编辑弹窗
-      modalTitle: "新增字典", // 弹窗标题
+      modalTitle: "新增", // 弹窗标题
       confirmLoading: false, // 确定按钮加载动画
 
-      modalForm: {
-        action: false,
-      },
-      action: false,
-      input_name:'',  // 字典名称
-      input_type:'', // 字典类型
-      input_value:'', // 字典值
+      modalForm: {},
+      input_name: "", // 字典名称
+      input_type: "", // 字典类型
+      input_value: "", // 字典值
+      filter_use: undefined,
 
       value: "",
+
+      diction_visible_type: "add", // 弹窗类型 add新增， edit编辑
+
+      page: 1, // 页码
+      pageSize: 10, //  页面数据条数
+      currentTotal: 0, // 数据总条数
     };
   },
   methods: {
-
     getToken() {
       this.$axios.get("api/token/authenticate").then((res) => {
-        this.$axios.defaults.headers.Authorization = 'Bearer ' + res.data.token
+        this.$axios.defaults.headers.Authorization = "Bearer " + res.data.token;
         this.getdata();
       });
     },
@@ -176,22 +200,75 @@ export default {
     // 获取字典列表
     getdata() {
       let data = {
-        PageNo: 1,
-        PageSize: 5,
+        PageNo: this.page,
+        PageSize: this.pageSize,
+        QueryInfo: {
+          Type: this.input_type,
+          Name: this.input_name,
+          Value: this.input_value,
+          IsEnable: this.filter_use
+            ? this.filter_use === "0"
+              ? true
+              : false
+            : null,
+        },
       };
       this.$axios.post("/api/datadictitem/getpage", data).then((res) => {
-        console.log('字典',res);
+        console.log("字典", res);
         if (res.data.isSuccess) {
           this.dictionData = res.data.value.datas;
-          this.current = res.data.value.pageCount;
+          this.PageNo = res.data.value.pageNo;
           this.currentTotal = res.data.value.totalCount;
         }
+      });
+    },
+
+    // 批量开起
+    batchBtn(type) {
+      let data = {
+        IsEnable: type,
+        IDs: this.selectedRowKeys,
+      };
+      this.$axios.post("api/datadictitem/updatestate", data).then((res) => {
+        if (res.data.isSuccess) {
+          this.$message.success(res.data.msg);
+          this.getdata();
+        }
+        console.log(res);
+      });
+    },
+
+    // 跳转页面
+    jumpPagination(page) {
+      this.page = page;
+      this.getdata();
+    },
+
+    // 修改页面显示条数
+    editPageSize(page, size) {
+      this.pageSize = size;
+      this.getdata();
+    },
+
+    // 字典列表启动停用
+    editTableStatus(val) {
+      let data = {
+        IsEnable: val.isEnable,
+        IDs: [val.id],
+      };
+      this.$axios.post("api/datadictitem/updatestate", data).then((res) => {
+        if (res.data.isSuccess) {
+          this.$message.success(res.data.msg);
+          this.getdata();
+        }
+        console.log(res);
       });
     },
 
     // 搜索按钮
     filterBtn() {
       console.log(this.filter_use);
+      this.getdata();
     },
 
     // 表格修改按钮
@@ -205,30 +282,50 @@ export default {
     },
 
     // 新增/修改弹窗
-    openDictionModal(type) {
+    openDictionModal(type, val) {
+      this.confirmLoading = false;
       this.dictionVisible = true;
-      let data = {
-
-          Type:this.input_type,                //类型：String  必有字段  备注：字典类型
-          Name: this.input_name,                //类型：String  必有字段  备注：字典名称
-          Value: this.input_value,                //类型：String  必有字段  备注：字典值
-          IsEnable:this.modalForm.action                //类型：Boolean  必有字段  备注：是否启用
+      this.diction_visible_type = type;
+      this.modalTitle = type === 'edit'?'编辑':'新增'
+      console.log(val);
+      let editData = JSON.parse(JSON.stringify(val));
+      this.modalForm = {
+        input_type: editData.type,
+        input_name: editData.name,
+        input_value: editData.value,
+        action: editData.isEnable,
+        id: String(editData.id)
       };
-      this.$axios.post('/api/datadictitem/save',data).then((res) => {
-          if (res.data.isSuccess) {
-              this.getdata();
-          }
-      })
     },
 
     // 弹窗提交按钮
     submitBtn() {
       this.confirmLoading = true;
-      setTimeout(() => {
-        this.confirmLoading = false;
-        this.cancelBtn();
-        this.$message.success("保存成功");
-      }, 1000);
+
+      let data = {
+        Type: this.modalForm.input_type, //类型：String  必有字段  备注：字典类型
+        Name: this.modalForm.input_name, //类型：String  必有字段  备注：字典名称
+        Value: this.modalForm.input_value, //类型：String  必有字段  备注：字典值
+        IsEnable: this.modalForm.action, //类型：Boolean  必有字段  备注：是否启用
+      };
+
+      if(this.diction_visible_type === "edit"){
+        data['ID'] = this.modalForm.id
+      }
+
+      let url =
+        this.diction_visible_type === "add"
+          ? "/api/datadictitem/save"
+          : "/api/datadictitem/update";
+
+      this.$axios.post(url, data).then((res) => {
+        if (res.data.isSuccess) {
+          this.cancelBtn();
+          this.$message.success(res.data.msg);
+          this.getdata();
+          this.confirmLoading = false;
+        }
+      });
     },
     // 弹窗关闭按钮
     cancelBtn() {
@@ -316,13 +413,12 @@ export default {
     }
 
     .ant-table-body > tbody.ant-table-tbody > tr.ant-table-row :hover {
-        background: #0070E2; 
-        // opacity: 0.1;
+      background: #0070e2;
+      // opacity: 0.1;
     }
 
     // .ant-table-tbody > tr:hover:not(.ant-table-row) > td { background: white; }
   }
-
 }
 .profit_modal_main {
   .main_header {
@@ -354,11 +450,10 @@ export default {
   }
 }
 
-.table_main{
-
-    .ant-table-tbody > tr.ant-table-row:hover > td{
-        background: #0070E2; 
-        opacity: 0.1;
-    }
+.table_main {
+  .ant-table-tbody > tr.ant-table-row:hover > td {
+    background: #0070e2;
+    opacity: 0.1;
+  }
 }
 </style>

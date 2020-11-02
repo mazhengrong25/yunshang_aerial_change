@@ -15,32 +15,32 @@ const routes = [
   {
     path: '/',
     name: 'Index',
-    component: () => import(/* webpackChunkName: "index" */ '../views/index.vue')
+    component: () => import(/* webpackChunkName: "Index" */ '../views/index.vue')
   },
   {
     path: '/profit',
-    name: 'Profit',
-    component: () => import(/* webpackChunkName: "index" */ '../views/profit.vue')
+    name: '来源所属利润中心管理',
+    component: () => import(/* webpackChunkName: "Profit" */ '../views/profit.vue')
   },
   {
     path: '/dictionary',
-    name: 'dictionary',
-    component: () => import(/* webpackChunkName: "index" */ '../views/dictionary.vue')
+    name: '数据字典',
+    component: () => import(/* webpackChunkName: "dictionary" */ '../views/dictionary.vue')
   },
   {
     path: '/rule',
-    name: 'rule',
-    component: () => import(/* webpackChunkName: "index" */ '../views/rule.vue')
+    name: '订单规则匹配管理',
+    component: () => import(/* webpackChunkName: "rule" */ '../views/rule.vue')
   },
   {
     path: '/dynamicLibrary',
-    name: 'dynamicLibrary',
-    component: () => import(/* webpackChunkName: "index" */ '../views/dynamicLibrary.vue')
+    name: '公共航变动态库',
+    component: () => import(/* webpackChunkName: "dynamicLibrary" */ '../views/dynamicLibrary.vue')
   },
    {
     path: '/changeNotice',
-    name: 'changeNotice',
-    component: () => import(/* webpackChunkName: "index" */ '../views/changeNotice.vue')
+    name: '航变通知旅客',
+    component: () => import(/* webpackChunkName: "changeNotice" */ '../views/changeNotice.vue')
   }
 ]
 

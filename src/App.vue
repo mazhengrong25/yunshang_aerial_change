@@ -8,7 +8,7 @@
 <template>
   <div id="app">
     <div id="header-template">
-      <header-template />
+      <!-- <header-template /> -->
     </div>
     <main-template>
       <div id="router-main">
@@ -147,6 +147,10 @@ export default {
   table {
     border-radius: 0 !important;
     border-left: none !important;
+
+    font-size: 12px;
+    font-weight: 400;
+    color: #333333;
     .ant-table-thead {
       th {
         border-radius: 0 !important;

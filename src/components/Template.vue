@@ -9,7 +9,7 @@
 <template>
   <div class="template">
     <div class="title">
-      <div class="title_name">数据字典管理</div>
+      <div class="title_name">{{templateTile}}</div>
       <div class="select_user">
         <a-select default-value="0" @change="handleChange">
           <a-select-option value="0"> 畅游国内 </a-select-option>
@@ -27,7 +27,7 @@
 export default {
   data() {
     return {
-    
+      templateTile: ''
     };
   },
   methods: {
@@ -35,6 +35,9 @@ export default {
       console.log(val);
     },
   },
+  mounted(){
+    this.templateTile = this.$route.name
+  }
 };
 </script>
 

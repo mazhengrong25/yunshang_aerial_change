@@ -1,3 +1,10 @@
+<!--
+ * @Description: 来源所属利润中心管理
+ * @Author: wish.WuJunLong
+ * @Date: 2020-10-27 09:59:47
+ * @LastEditTime: 2020-10-28 14:12:12
+ * @LastEditors: wish.WuJunLong 
+-->
 <template>
   <div class="profit">
     <div class="filter_header">
@@ -59,6 +66,7 @@
       <a-table
         bordered
         size="middle"
+        rowKey="id"
         :data-source="profitData"
         :rowSelection="{
           selectedRowKeys: selectedRowKeys,
@@ -329,9 +337,9 @@ export default {
       filter_source: undefined, // 筛选具体来源
       filter_profilt: undefined, // 筛选利润中心
 
-      profitData: {
-        profit_name:'', //利润中心名称
-      },
+      profitFrom: {},
+
+      profitData: [],  // 利润中心数据
         
       
       selectedRowKeys: [], // 表格多选列表
@@ -351,16 +359,21 @@ export default {
     };
   },
   methods: {
-
+    getToken(){
+      this.$axios.get("api/token/authenticate").then((res) => {
+        this.$axios.defaults.headers.Authorization = "Bearer " + res.data.token;
+        this.getdata()
+      });
+    },
     getdata(){
       let data ={
-          profit_name:this.profitData.profitCenterName
+          profit_name:this.profitFrom.profitCenterName
       }
       this.$axios.post('/api/configureprofitcenterInfo/getpage',data)
       .then(res =>{
-          console.log('分页查询',res.data.value.datas)
-          console.log('profitData',res.data.value.datas)
-          this.profitData = res.data.value.datas
+          if(res.data.isSuccess){
+            this.profitData = res.data.value.datas
+          }
       })
       .catch(res => {
         console.log(res)
@@ -409,21 +422,12 @@ export default {
 
     // 多选框选择邮箱弹出弹框
     openEmailModal(type) {
+        this.profitVisible = false;
         this.emailVisible = true;
     }
   },
-  mounted() {
-    this.getdata()
-    for (let i = 0; i < 22; i++) {
-      this.profitData.push({
-        key: i,
-        type: "数据字典" + i,
-        source: "具体来源" + i,
-        phone: "邮箱:"+'296324796@qq.com',
-        profitCenterName: "利润中心" + i,
-        action: i % 2 === 0,
-      });
-    }
+  created() {
+    this.getToken()
   },
 };
 </script>
@@ -555,7 +559,5 @@ export default {
       }
     }
   }
-}&:not(:last-child) {
-   margin-bottom: 16px;
 }
 </style>
