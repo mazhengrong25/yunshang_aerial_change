@@ -229,4 +229,7 @@ export default {
     }
   }
 }
+.ant-tooltip{
+  max-width: 600px !important;
+}
 </style>

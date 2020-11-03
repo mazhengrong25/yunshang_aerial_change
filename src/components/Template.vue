@@ -35,7 +35,8 @@ export default {
       console.log(val);
     },
   },
-  mounted(){
+  created(){
+    console.log(this.$route)
     this.templateTile = this.$route.name
   }
 };
