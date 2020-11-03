@@ -64,8 +64,8 @@
 
     <div class="table_tool">
       <a-button @click="openProfitModal('add')">+新增</a-button>
-      <a-button>批量启用</a-button>
-      <a-button>批量停用</a-button>
+      <a-button @click="dataStatusBtn(true)">批量启用</a-button>
+      <a-button @click="dataStatusBtn(false)">批量停用</a-button>
     </div>
 
     <div class="table_main">
@@ -87,14 +87,16 @@
             >
           </template>
         </a-table-column>
-        <a-table-column key="source" title="来源类型" data-index="source" />
+        <a-table-column
+          key="sourceName"
+          title="来源类型"
+          data-index="sourceName"
+        />
         <a-table-column key="sign" title="具体来源" data-index="sign">
         </a-table-column>
-        <a-table-column
-          title="利润中心"
-        >
-        <template slot-scope="text, record">
-            {{record.profitCenterName}}
+        <a-table-column title="利润中心">
+          <template slot-scope="text, record">
+            {{ record.profitCenterName }}
           </template>
         </a-table-column>
         <a-table-column key="action" title="启用/停用">
@@ -109,7 +111,7 @@
       </a-table>
       <div class="table_pagination">
         <a-pagination
-        @change="jumpPagination"
+          @change="jumpPagination"
           @showSizeChange="editPageSize"
           v-model="current"
           show-size-changer
@@ -338,11 +340,21 @@
           <div class="item_box">
             <div class="email_title_box">模板</div>
             <div class="email_item_box">
-              <div class="email_card">
-                <div class="card_title">模板名称:</div>
-                <div class="card_title">发件人域:</div>
-                <div class="card_title">发件人地址正则:</div>
-                <div class="card_title">主题正则:</div>
+              <div
+                class="email_card"
+                v-for="(item, index) in templateList"
+                :key="index"
+              >
+                <div class="card_title">模板名称：{{ item.readerName }}</div>
+                <div class="card_title">
+                  发件人域：{{ String(item.domains) }}
+                </div>
+                <div class="card_title">
+                  发件人地址正则：{{ item.fromExpression }}
+                </div>
+                <div class="card_title">
+                  主题正则：{{ item.subjectExpression }}
+                </div>
               </div>
             </div>
           </div>
@@ -377,9 +389,11 @@ export default {
       modalForm: {}, // 数据详情
       mailForm: {}, // 邮件数据
 
-      emailVisible: true, // 多选框 邮箱弹窗
+      emailVisible: false, // 多选框 邮箱弹窗
 
       emailModalStatus: "0", // 弹窗类型
+
+      templateList: [], // 模板列表
     };
   },
   methods: {
@@ -389,6 +403,7 @@ export default {
         this.getdata();
         this.getDictonaryList();
         this.getProfitCenter();
+        this.getTemplateList();
       });
     },
     getdata() {
@@ -417,6 +432,27 @@ export default {
             }
           }
         });
+    },
+
+    // 获取模板列表
+    getTemplateList() {
+      this.$axios.get("api/basetemplate/getemailreaders").then((res) => {
+        if (res.data.isSuccess) {
+          this.templateList = res.data.value;
+        }
+      });
+    },
+
+    // 批量启用停用数据列表
+    dataStatusBtn(type) {
+      // this.selectedRowKeys
+      let data = {};
+      this.$axios.post("", data).then((res) => {
+        if (res.data.isSuccess) {
+          this.$message.success(res.data.msg);
+          this.getdata();
+        }
+      });
     },
 
     // 获取来源渠道
@@ -463,7 +499,6 @@ export default {
     },
     // 表格多选
     onSelectChange(val) {
-      console.log(val);
       this.selectedRowKeys = val;
     },
 
@@ -473,11 +508,25 @@ export default {
       this.visibleType = type;
       this.confirmLoading = false;
 
+      console.log(val);
+
       if (type === "add") {
         this.modalTitle = "新增";
         this.modalForm = {};
       } else {
         this.modalTitle = "编辑";
+        this.modalForm = {
+          isEnable: val.isEnable,
+          Source: val.source,
+          Sign: val.sign,
+          ProfitCenterCode:
+            val.profitCenterCode.indexOf(",") > 0
+              ? val.profitCenterCode.split(",")
+              : val.profitCenterCode,
+          // SignInfo: "mock",
+        };
+        this.emailModalStatus = val.sign.indexOf("@") > 0 ? "1" : "0";
+        console.log(this.modalForm);
       }
     },
 
@@ -506,16 +555,14 @@ export default {
       newData["ProfitCenterName"] = newData.ProfitCenterName
         ? String(newData.ProfitCenterName)
         : "";
-      newData["SignInfo"] = newData.SignInfo ? newData.SignInfo : "";
-      newData["Readers"] = newData.Readers ? newData.Readers : [];
       let data = {
         isEnable: newData.isEnable ? true : false,
         Source: newData.Source,
         Sign: newData.Sign,
         ProfitCenterName: newData.ProfitCenterName,
         ProfitCenterCode: newData.ProfitCenterCode,
-        SignInfo: newData.SignInfo,
-        Readers: newData.Readers,
+        SignInfo: JSON.stringify(this.mailForm) !== '{}'?JSON.stringify(this.mailForm): '',
+        Readers: [],
       };
 
       console.log(data);
@@ -526,7 +573,8 @@ export default {
           this.confirmLoading = false;
           if (res.data.isSuccess) {
             this.$message.success(res.data.msg);
-            // this.cancelBtn();
+            this.cancelBtn();
+            this.getdata();
           }
         });
     },
@@ -553,9 +601,8 @@ export default {
         this.emailVisible = true;
       }
     },
-  
-  
-      // 跳转页面
+
+    // 跳转页面
     jumpPagination(page) {
       this.current = page;
       this.getData();
@@ -566,7 +613,6 @@ export default {
       this.currentSize = size;
       this.getData();
     },
-
   },
   created() {
     this.getToken();
@@ -722,7 +768,7 @@ export default {
       }
       .email_item_box {
         flex: 1;
-        /deep/.ant-select-enabled{
+        /deep/.ant-select-enabled {
           height: 32px;
           overflow: hidden;
         }
@@ -739,6 +785,14 @@ export default {
           border-radius: 2px;
           height: 232px;
           background: #f1f3f5;
+          overflow-y: auto;
+          .email_card {
+            &:not(:last-child) {
+              padding-bottom: 8px;
+              margin-bottom: 8px;
+              border-bottom: 1px solid #dfdfdf;
+            }
+          }
         }
       }
     }

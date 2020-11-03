@@ -66,7 +66,6 @@ export default {
 .ant-pagination {
   .ant-pagination-item {
     min-width: 24px;
-    width: 24px;
     height: 24px;
     line-height: 24px;
     // background: #0070e2;
