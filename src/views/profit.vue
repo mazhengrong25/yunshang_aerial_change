@@ -15,25 +15,26 @@
             style="width: 160px"
             placeholder="请选择"
             allowClear
-            v-model="filter_type"
+            v-model="filter_from.Source"
           >
-            <a-select-option value="0"> 类型1 </a-select-option>
-            <a-select-option value="1"> 类型2 </a-select-option>
+            <a-select-option
+              v-for="(item, index) in dictonaryList"
+              :key="index"
+              :value="item.value"
+            >
+              {{ item.name }}
+            </a-select-option>
           </a-select>
         </div>
       </div>
       <div class="filter_list">
         <div class="list_title">具体来源</div>
         <div class="list_selece">
-          <a-select
-            style="width: 160px"
-            placeholder="请选择"
+          <a-input
+            v-model="filter_from.Sign"
             allowClear
-            v-model="filter_source"
-          >
-            <a-select-option value="0"> 来源1 </a-select-option>
-            <a-select-option value="1"> 来源2 </a-select-option>
-          </a-select>
+            placeholder="手机号/邮箱"
+          />
         </div>
       </div>
       <div class="filter_list">
@@ -43,15 +44,20 @@
             style="width: 160px"
             placeholder="请选择"
             allowClear
-            v-model="filter_profilt"
+            v-model="filter_from.ProfitCenterCode"
           >
-            <a-select-option value="0"> 利润中心1 </a-select-option>
-            <a-select-option value="1"> 利润中心2 </a-select-option>
+            <a-select-option
+              v-for="(item, index) in profitCenterList"
+              :key="index"
+              :value="item.code"
+            >
+              {{ item.name }}
+            </a-select-option>
           </a-select>
         </div>
       </div>
 
-      <a-button class="filter_btn" type="primary" @click="filterBtn"
+      <a-button class="filter_btn" type="primary" @click="getdata"
         >搜索</a-button
       >
     </div>
@@ -76,43 +82,25 @@
       >
         <a-table-column title="操作">
           <template slot-scope="record">
-            <a-tag color="#FB9826" @click="openProfitModal('edit')">修改</a-tag>
+            <a-tag color="#FB9826" @click="openProfitModal('edit', record)"
+              >修改</a-tag
+            >
           </template>
         </a-table-column>
-        <a-table-column key="type" title="来源类型" data-index="type" />
-        <a-table-column key="source" title="具体来源" data-index="source">
-
-          <!-- <a-tooltip placement="bottom">
-            <template slot-scope="text, record">
-              <span>{{ record.phone }}</span>
-            </template>
-          </a-tooltip> -->
-          <!-- <a-tooltip placement="bottom">
-            <template slot-scope="text, record">
-              <span>prompt text</span>
-            </template>
-            <a-button type="link">
-             {{ record.phone}}
-            </a-button>
-          </a-tooltip> -->
-          <!-- <template slot-scope="text, record">
-            <a-button type="link">
-             {{ record.phone}}
-            </a-button>
-          </template> -->
+        <a-table-column key="source" title="来源类型" data-index="source" />
+        <a-table-column key="sign" title="具体来源" data-index="sign">
         </a-table-column>
         <a-table-column
-          key="profitCenter"
           title="利润中心"
-          data-index="profitCenterName"
-          
         >
-          {{this.profitData.profit_name}}
+        <template slot-scope="text, record">
+            {{record.profitCenterName}}
+          </template>
         </a-table-column>
         <a-table-column key="action" title="启用/停用">
           <template slot-scope="text, record">
             <a-switch
-              v-model="record.action"
+              v-model="record.isEnable"
               checked-children="启用"
               un-checked-children="停用"
             />
@@ -121,12 +109,14 @@
       </a-table>
       <div class="table_pagination">
         <a-pagination
+        @change="jumpPagination"
+          @showSizeChange="editPageSize"
           v-model="current"
           show-size-changer
-          :total="profitData.length"
+          :total="currentTotal"
         />
         <div class="datas_total">
-          共 <span>{{ profitData.length }}</span> 条记录
+          共 <span>{{ currentTotal }}</span> 条记录
         </div>
       </div>
     </div>
@@ -146,7 +136,7 @@
               <div class="item_title">配置状态</div>
               <div class="item_input">
                 <a-switch
-                  v-model="modalForm.action"
+                  v-model="modalForm.isEnable"
                   checked-children="启用"
                   un-checked-children="停用"
                 />
@@ -156,12 +146,18 @@
               <div class="item_title">来源类型</div>
               <div class="item_input">
                 <a-select
+                  v-model="modalForm.Source"
                   placeholder="请选择"
                   allowClear
-                  style="width:240px"
+                  style="width: 240px"
                 >
-                  <a-select-option value="0"> 数据字典1 </a-select-option>
-                  <a-select-option value="1"> 数据字典2 </a-select-option>
+                  <a-select-option
+                    v-for="(item, index) in dictonaryList"
+                    :key="index"
+                    :value="item.value"
+                  >
+                    {{ item.name }}
+                  </a-select-option>
                 </a-select>
               </div>
             </div>
@@ -170,13 +166,19 @@
               <div class="item_input">
                 <a-select
                   mode="multiple"
-                  :default-value="['a1', 'b2']"
+                  v-model="modalForm.ProfitCenterCode"
                   style="width: 100%"
                   placeholder="请选择"
                   @change="handleChange"
+                  :maxTagCount="1"
+                  allowClear
                 >
-                  <a-select-option v-for="i in 25" :key="(i + 9).toString(36) + i">
-                    {{ (i + 9).toString(36) + i }}
+                  <a-select-option
+                    v-for="(item, index) in profitCenterList"
+                    :key="index"
+                    :value="item.code"
+                  >
+                    {{ item.name }}
                   </a-select-option>
                 </a-select>
               </div>
@@ -185,18 +187,18 @@
               <div class="item_title">具体来源</div>
               <div class="item_input">
                 <a-input-group compact>
-                  <a-select default-value="0">
-                    <a-select-option value="0">
-                      手机
-                    </a-select-option>
-                    <a-select-option value="1" @click="openEmailModal('email')">
-                      邮箱
-                    </a-select-option>
+                  <a-select @change="openEmailModal" v-model="emailModalStatus">
+                    <a-select-option value="0"> 手机 </a-select-option>
+                    <a-select-option value="1"> 邮箱 </a-select-option>
                   </a-select>
-                  <a-input style="width: 73%" default-value="请输入" allowClear/>
-              </a-input-group>
+                  <a-input
+                    v-model="modalForm.Sign"
+                    style="width: 73%"
+                    placeholder="请输入"
+                    allowClear
+                  />
+                </a-input-group>
               </div>
-
             </div>
           </div>
         </div>
@@ -205,126 +207,147 @@
 
     <!-- 多选框  邮箱-->
     <a-modal
-    :title="modalTitle"
-    :visible="emailVisible"
-    :confirm-loading="confirmLoading"
-    centered
-    @ok="submitBtn"
-    @cancel="cancelBtn"
-    width="1040px"
+      :title="modalTitle"
+      :visible="emailVisible"
+      :confirm-loading="confirmLoading"
+      centered
+      @ok="submitBtn"
+      @cancel="cancelBtn"
+      :width="1040"
     >
-
-    <div class="email_list">
-
-        <div class="email_box">
-          <div class="email_title">配置状态</div>
-          <div class="email_item">
-              <a-switch checked-children="启用" un-checked-children="停用" default-checked />
-          </div>
-        </div>
-
-        <div class="email_box">
-
-          <div class="email_title_box">来源类型</div>
-          <div class="email_item_box">
-              <a-select
-                placeholder="请选择"
-                style="width: 240px"
-                @change="handleChange"
-              >
-                <a-select-option value="0">
-                  数据字典1
-                </a-select-option>
-                <a-select-option value="1">
-                  数据字典2
-                </a-select-option>
-              </a-select>
-          </div>
-
-          <div class="email_title_box">利润中心</div>
-          <div class="email_item_box">
-              <a-select
-                mode="multiple"
-                :default-value="['a1', 'b2']"
-                style="width: 240px"
-                placeholder="请选择"
-                @change="handleChange"
-              >
-                <a-select-option v-for="i in 25" :key="(i + 9).toString(36) + i">
-                  {{ (i + 9).toString(36) + i }}
-                </a-select-option>
-              </a-select>
-          </div>
-
-
-          <div class="email_title_box">具体来源</div>
-          <div class="email_item_box">
-              <a-input-group compact>
-                  <a-select default-value="0">
-                    <a-select-option value="0">
-                      手机
-                    </a-select-option>
-                    <a-select-option value="1">
-                      邮箱
-                    </a-select-option>
-                  </a-select>
-                  <a-input style="width: 73%" default-value="请输入" allowClear/>
-              </a-input-group>
-          </div>
-
-        </div>
-
-
-        <div class="email_box">
-
-          <div class="email_title_box">端口</div>
-          <div class="email_item_box">
-              <a-input style="width:260px"></a-input>
-          </div>
-
-          <div class="email_title_box">SLL</div>
-          <div class="email_item_box">
-              <a-input style="width:260px"></a-input>
-          </div>
-
-
-          <div class="email_title_box">地址</div>
-          <div class="email_item_box">
-              <a-input style="width:260px"></a-input>
-          </div>
-
-        </div>
-
-        <div class="email_box">
-
-          <div class="email_title_box">协议</div>
-          <div class="email_item_box">
-              <a-input style="width:260px"></a-input>
-          </div>
-
-          <div class="email_title_box">秘匙</div>
-          <div class="email_item_box">
-              <a-input style="width:260px"></a-input>
-          </div>
-
-        </div>
-
-        <div class="email_box">
-
-          <div class="email_title_box">模板</div>
-          <div class="email_item_box">
-              <div class="email_card">
-                 <div class="card_title">模板名称:</div>
-                 <div class="card_title">发件人域:</div>
-                 <div class="card_title">发件人地址正则:</div>
-                 <div class="card_title">主题正则:</div>
+      <div class="email_list">
+        <div class="header_box">
+          <div class="email_box">
+            <div class="box_item">
+              <div class="email_title_box">配置状态</div>
+              <div class="email_item_box">
+                <a-switch
+                  checked-children="启用"
+                  un-checked-children="停用"
+                  v-model="modalForm.isEnable"
+                />
               </div>
+            </div>
           </div>
 
-          
+          <div class="email_box">
+            <div class="box_item">
+              <div class="email_title_box">来源类型</div>
+              <div class="email_item_box">
+                <a-select
+                  v-model="modalForm.Source"
+                  placeholder="请选择"
+                  allowClear
+                  style="width: 100%"
+                >
+                  <a-select-option
+                    v-for="(item, index) in dictonaryList"
+                    :key="index"
+                    :value="item.value"
+                  >
+                    {{ item.name }}
+                  </a-select-option>
+                </a-select>
+              </div>
+            </div>
+
+            <div class="box_item">
+              <div class="email_title_box">利润中心</div>
+              <div class="email_item_box">
+                <a-select
+                  mode="multiple"
+                  v-model="modalForm.ProfitCenterCode"
+                  style="width: 100%"
+                  placeholder="请选择"
+                  @change="handleChange"
+                  allowClear
+                  :maxTagCount="1"
+                >
+                  <a-select-option
+                    v-for="(item, index) in profitCenterList"
+                    :key="index"
+                    :value="item.code"
+                  >
+                    {{ item.name }}
+                  </a-select-option>
+                </a-select>
+              </div>
+            </div>
+
+            <div class="box_item">
+              <div class="email_title_box">具体来源</div>
+              <div class="email_item_box">
+                <a-input-group compact>
+                  <a-select @change="openEmailModal" v-model="emailModalStatus">
+                    <a-select-option value="0"> 手机 </a-select-option>
+                    <a-select-option value="1"> 邮箱 </a-select-option>
+                  </a-select>
+                  <a-input
+                    v-model="modalForm.Sign"
+                    style="width: 73%"
+                    placeholder="请输入"
+                    allowClear
+                  />
+                </a-input-group>
+              </div>
+            </div>
+          </div>
         </div>
 
-    </div>
+        <div class="email_box">
+          <div class="item_box">
+            <div class="email_title_box">端口</div>
+            <div class="email_item_box">
+              <a-input allowClear v-model="mailForm.port"></a-input>
+            </div>
+          </div>
+
+          <div class="item_box">
+            <div class="email_title_box">SLL</div>
+            <div class="email_item_box">
+              <a-input allowClear v-model="mailForm.ssl"></a-input>
+            </div>
+          </div>
+
+          <div class="item_box">
+            <div class="email_title_box">地址</div>
+            <div class="email_item_box">
+              <a-input allowClear v-model="mailForm.address"></a-input>
+            </div>
+          </div>
+        </div>
+
+        <div class="email_box">
+          <div class="item_box">
+            <div class="email_title_box">协议</div>
+            <div class="email_item_box">
+              <a-input allowClear v-model="mailForm.protocol"></a-input>
+            </div>
+          </div>
+
+          <div class="item_box">
+            <div class="email_title_box">秘匙</div>
+            <div class="email_item_box">
+              <a-input allowClear v-model="mailForm.password"></a-input>
+            </div>
+          </div>
+          <div class="item_box"></div>
+        </div>
+
+        <div class="email_box tamplate_box">
+          <div class="item_box">
+            <div class="email_title_box">模板</div>
+            <div class="email_item_box">
+              <div class="email_card">
+                <div class="card_title">模板名称:</div>
+                <div class="card_title">发件人域:</div>
+                <div class="card_title">发件人地址正则:</div>
+                <div class="card_title">主题正则:</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </a-modal>
   </div>
 </template>
@@ -333,56 +356,105 @@
 export default {
   data() {
     return {
-      filter_type: undefined, // 筛选来源类型
-      filter_source: undefined, // 筛选具体来源
-      filter_profilt: undefined, // 筛选利润中心
+      filter_from: {}, // 筛选
 
-      profitFrom: {},
+      profitData: [], // 利润中心数据
 
-      profitData: [],  // 利润中心数据
-        
-      
+      dictonaryList: [], // 来源渠道
+
+      profitCenterList: [], // 部门列表
+
       selectedRowKeys: [], // 表格多选列表
 
       current: 1, // 分页index
+      currentTotal: 0, // 页面数据总数
+      currentSize: 10, // 分页数量
 
       profitVisible: false, // 新增/编辑弹窗
       modalTitle: "新增", // 弹窗标题
       confirmLoading: false, // 确定按钮加载动画
 
-      modalForm: {
-        action: false,
-      },
-      value:'',
+      modalForm: {}, // 数据详情
+      mailForm: {}, // 邮件数据
 
-      emailVisible: false, // 多选框 邮箱弹窗
+      emailVisible: true, // 多选框 邮箱弹窗
+
+      emailModalStatus: "0", // 弹窗类型
     };
   },
   methods: {
-    getToken(){
+    getToken() {
       this.$axios.get("api/token/authenticate").then((res) => {
         this.$axios.defaults.headers.Authorization = "Bearer " + res.data.token;
-        this.getdata()
+        this.getdata();
+        this.getDictonaryList();
+        this.getProfitCenter();
       });
     },
-    getdata(){
-      let data ={
-          profit_name:this.profitFrom.profitCenterName
-      }
-      this.$axios.post('/api/configureprofitcenterInfo/getpage',data)
-      .then(res =>{
-          if(res.data.isSuccess){
-            this.profitData = res.data.value.datas
+    getdata() {
+      let data = {
+        PageNo: this.current,
+        PageSize: this.currentSize,
+        QueryInfo: this.filter_from,
+      };
+      this.$axios
+        .post("/api/configureprofitcenterInfo/getpage", data)
+        .then((res) => {
+          if (res.data.isSuccess) {
+            this.profitData = res.data.value.datas;
+            this.current = res.data.value.pageNo;
+            this.currentTotal = res.data.value.totalCount;
+            if (this.dictonaryList.length > 0) {
+              this.profitData.forEach((item) => {
+                this.dictonaryList.forEach((oitem) => {
+                  if (item.source === oitem.value) {
+                    console.log(oitem);
+                    item["sourceName"] = oitem.name;
+                  }
+                });
+              });
+              this.$forceUpdate();
+            }
           }
-      })
-      .catch(res => {
-        console.log(res)
-      })
+        });
     },
 
-    // 搜索按钮
-    filterBtn() {
-      console.log(this.filter_type, this.filter_source, this.filter_profilt);
+    // 获取来源渠道
+    getDictonaryList() {
+      let data = {
+        type: "Source",
+      };
+      this.$axios
+        .get("api/datadictitem/getListbytype", { params: data })
+        .then((res) => {
+          console.log(res);
+          if (res.data.isSuccess) {
+            this.dictonaryList = res.data.value;
+            this.profitData.forEach((item) => {
+              this.dictonaryList.forEach((oitem) => {
+                if (item.source === oitem.value) {
+                  console.log(oitem);
+                  item["sourceName"] = oitem.name;
+                }
+              });
+            });
+            this.$forceUpdate();
+          }
+        });
+    },
+
+    // 获取部门列表
+    getProfitCenter() {
+      let data = {
+        messagetype: "yatp_get_profitCenter_tree_info",
+      };
+      this.$axios
+        .get("/api/ExternalAPI/GetYatpProfitCenter", { params: data })
+        .then((res) => {
+          if (res.data.isSuccess) {
+            this.profitCenterList = res.data.value;
+          }
+        });
     },
 
     // 表格修改按钮
@@ -396,18 +468,67 @@ export default {
     },
 
     // 新增/修改弹窗
-    openProfitModal(type) {
+    openProfitModal(type, val) {
       this.profitVisible = true;
+      this.visibleType = type;
+      this.confirmLoading = false;
+
+      if (type === "add") {
+        this.modalTitle = "新增";
+        this.modalForm = {};
+      } else {
+        this.modalTitle = "编辑";
+      }
     },
 
     // 弹窗提交按钮
     submitBtn() {
       this.confirmLoading = true;
-      setTimeout(() => {
-        this.confirmLoading = false;
-        this.cancelBtn();
-        this.$message.success("保存成功");
-      }, 1000);
+
+      let newData = JSON.parse(JSON.stringify(this.modalForm));
+
+      if (newData.ProfitCenterCode) {
+        if (newData.ProfitCenterCode.length > 0) {
+          newData["ProfitCenterName"] = [];
+          newData.ProfitCenterCode.forEach((item) => {
+            this.profitCenterList.forEach((oitem) => {
+              if (item === oitem.code) {
+                newData.ProfitCenterName.push(oitem.name);
+              }
+            });
+          });
+        }
+      }
+
+      newData["ProfitCenterCode"] = newData.ProfitCenterCode
+        ? String(newData.ProfitCenterCode)
+        : "";
+      newData["ProfitCenterName"] = newData.ProfitCenterName
+        ? String(newData.ProfitCenterName)
+        : "";
+      newData["SignInfo"] = newData.SignInfo ? newData.SignInfo : "";
+      newData["Readers"] = newData.Readers ? newData.Readers : [];
+      let data = {
+        isEnable: newData.isEnable ? true : false,
+        Source: newData.Source,
+        Sign: newData.Sign,
+        ProfitCenterName: newData.ProfitCenterName,
+        ProfitCenterCode: newData.ProfitCenterCode,
+        SignInfo: newData.SignInfo,
+        Readers: newData.Readers,
+      };
+
+      console.log(data);
+
+      this.$axios
+        .post("/api/ConfigureProfitCenterInfo/Save", data)
+        .then((res) => {
+          this.confirmLoading = false;
+          if (res.data.isSuccess) {
+            this.$message.success(res.data.msg);
+            // this.cancelBtn();
+          }
+        });
     },
     // 弹窗关闭按钮
     cancelBtn() {
@@ -417,17 +538,38 @@ export default {
 
     // 利润多选  选择器
     handleChange(value) {
-       console.log(`selected ${value}`);
+      console.log(`selected ${value}`);
     },
 
     // 多选框选择邮箱弹出弹框
     openEmailModal(type) {
+      console.log(type);
+      this.emailModalStatus = type;
+      if (type === "0") {
+        this.profitVisible = true;
+        this.emailVisible = false;
+      } else {
         this.profitVisible = false;
         this.emailVisible = true;
-    }
+      }
+    },
+  
+  
+      // 跳转页面
+    jumpPagination(page) {
+      this.current = page;
+      this.getData();
+    },
+
+    // 修改页面显示条数
+    editPageSize(page, size) {
+      this.currentSize = size;
+      this.getData();
+    },
+
   },
   created() {
-    this.getToken()
+    this.getToken();
   },
 };
 </script>
@@ -508,55 +650,103 @@ export default {
 }
 // 新增弹窗
 .profit_modal_main {
-    .modal_list {
-      .modal_item {
-        display: flex;
-        align-items: center;
-        padding:10px 68px;
-        .item_title {
-          font-size: 14px;
-          font-weight: 400;
-          color: #333333;
-          margin-right: 8px;
-        }
-        .item_input{
-            width: 240px;
-        }&:not(:last-child) {
-        margin-bottom: 5px;
-        }
+  .modal_list {
+    .modal_item {
+      display: flex;
+      align-items: center;
+      padding: 10px 68px;
+      .item_title {
+        font-size: 14px;
+        font-weight: 400;
+        color: #333333;
+        margin-right: 8px;
       }
-
+      .item_input {
+        width: 240px;
+      }
+      &:not(:last-child) {
+        margin-bottom: 5px;
+      }
     }
-    .ant-modal-body {
-      padding:68px;
-    }
-    .ant-modal-root {
-      width:440px;
-    }
+  }
+  .ant-modal-body {
+    padding: 68px;
+  }
+  .ant-modal-root {
+    width: 440px;
+  }
 }
 
 // 邮箱新增弹窗
 .email_list {
-  
   .email_item {
     margin-left: 8px;
   }
+  .header_box {
+    border-bottom: 1px solid rgba(223, 223, 223, 1);
+    margin-bottom: 16px;
+    .email_box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      .box_item {
+        display: flex;
+        align-items: center;
+        flex: 1;
+        &:not(:last-child) {
+          margin-right: 21px;
+        }
+        .email_title_box {
+          margin-right: 8px;
+        }
+        .email_item_box {
+          flex: 1;
+        }
+      }
+    }
+  }
   .email_box {
     display: flex;
-    
-   
-    .email_item_box {
-      margin-left: 8px;
-      margin-right: 21px;
-      
-      .email_card{
-        width: 935px;
-        height: 232px;
-        padding: 16px 12px ;
-        background: #F1F3F5; 
-        overflow-y:scroll;
-  
+    align-items: center;
+    margin-bottom: 24px;
+    .item_box {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      flex: 3;
+      &:not(:last-child) {
+        margin-right: 21px;
       }
+      .email_title_box {
+        margin-right: 8px;
+      }
+      .email_item_box {
+        flex: 1;
+        /deep/.ant-select-enabled{
+          height: 32px;
+          overflow: hidden;
+        }
+      }
+    }
+
+    &.tamplate_box {
+      .item_box {
+        align-items: flex-start;
+        .email_item_box {
+          border: 1px solid #cccccc;
+          padding: 16px 12px;
+          overflow-y: scroll;
+          border-radius: 2px;
+          height: 232px;
+          background: #f1f3f5;
+        }
+      }
+    }
+
+    .email_title_box {
+      text-align: right;
+      min-width: 30px;
+      flex-shrink: 0;
     }
   }
 }
