@@ -1,7 +1,7 @@
 <!--
  * @Author: mzr
  * @Date: 2020-10-30 14:13:41
- * @LastEditTime: 2020-11-03 15:19:53
+ * @LastEditTime: 2020-11-03 15:42:52
  * @LastEditors: Please set LastEditors
  * @Description: 航变通知
  * @FilePath: \positiond:\aerial\yunshang_aerial_change\src\views\changeNotice.vue
@@ -169,7 +169,12 @@
           </template>
         </a-table-column>
         <a-table-column key="pnr" title="PNR" data-index="isEnable" />
-        <a-table-column key="passenger" title="乘客" data-index="isEnable" />
+        <a-table-column key="passenger" title="乘客" data-index="isEnable">
+          <template slot-scope="record">
+            <p>张三</p>
+            <span><img src="../assets/xing.png"></img></span>
+          </template>
+        </a-table-column>
         <a-table-column key="state" title="状态" data-index="isEnable">
             <template slot-scope="record">
                 <a-button type="link" @click="openStateModal()">待处理</a-button>
@@ -912,6 +917,11 @@ export default {
         align-items: center;
         justify-content: center;
         margin-right: 10px;
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+        }
       }
     }
     .table_pagination {
