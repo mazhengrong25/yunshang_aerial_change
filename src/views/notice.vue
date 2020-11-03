@@ -1,7 +1,7 @@
 <!--
  * @Author: mzr
  * @Date: 2020-10-30 14:13:41
- * @LastEditTime: 2020-11-02 18:17:16
+ * @LastEditTime: 2020-11-03 15:02:31
  * @LastEditors: Please set LastEditors
  * @Description: 航变通知
  * @FilePath: \positiond:\aerial\yunshang_aerial_change\src\views\changeNotice.vue
@@ -92,7 +92,12 @@
           <a-range-picker :size="size" style="width:346px"/>
         </div>
       </div>
-      <!-- <a-button class="filter_btn" type="primary">搜索</a-button> -->
+      <!-- <div class="filter_list">
+        <div class="list_title">
+          <a-button class="filter_btn" type="primary">搜索</a-button>
+        </div>
+      </div> -->
+     
     </div>
 
 
@@ -104,17 +109,8 @@
 
     <!-- 滑动导航栏 -->
     <a-tabs type="card" @change="callback">
-      <a-tab-pane key="1" tab="待处理">
-        <span slot="tab">
-          <a-tag color="pink">136055</a-tag>
-        </span>
-      </a-tab-pane>
-      <a-tab-pane key="2" tab="本人锁定">
-        <span>
-           <div color="pink">136055</div>
-        </span>
-      
-      </a-tab-pane>
+      <a-tab-pane key="1" tab="待处理"></a-tab-pane>
+      <a-tab-pane key="2" tab="本人锁定"></a-tab-pane>
       <a-tab-pane key="3" tab="处理中" />
       <a-tab-pane key="4" tab="已处理" />
       <a-tab-pane key="5" tab="通知失败" />
@@ -190,33 +186,38 @@
       :confirm-loading="confirmLoading"
       centered
       @ok="submitBtn"
-      @cancel="cancelBtn">
+      @cancel="cancelBtn"
+      width="1000px">
       
-        <!-- 展开  收起表格 -->
-        <a-table
-        slot="expandedRowRender"
-        slot-scope="text"
-        :columns="innerColumns"
-        :data-source="innerData"
-        :pagination="false"
-        >
-        <span slot="status" slot-scope="text"> <a-badge status="success" />Finished </span>
-        <span slot="operation" slot-scope="text" class="table-operation">
-          <a>Pause</a>
-          <a>Stop</a>
-          <a-dropdown>
-            <a-menu slot="overlay">
-              <a-menu-item>
-                Action 1
-              </a-menu-item>
-              <a-menu-item>
-                Action 2
-              </a-menu-item>
-            </a-menu>
-            <a> More <a-icon type="down" /> </a>
-          </a-dropdown>
-        </span>
-        </a-table>
+      <!-- <div class="nav">
+          <div class="tags"></div>
+          <div class="text">日志信息</div>
+          <div class="number">2</div>
+          <div></div>
+      </div>
+      
+      <div class="nav">
+          <div class="tags"></div>
+          <div class="text">备注信息</div>
+          <div class="number">0</div>
+      </div>
+
+      <div class="nav">
+          <div class="tags"></div>
+          <div class="text">附件信息</div>
+          <div class="number">0</div>
+      </div> -->
+      <a-collapse accordion>
+        <a-collapse-panel key="1" header="This is panel header 1">
+          <p>{{ text }}</p>
+        </a-collapse-panel>
+        <a-collapse-panel key="2" header="This is panel header 2" :disabled="false">
+          <p>{{ text }}</p>
+        </a-collapse-panel>
+        <a-collapse-panel key="3" header="This is panel header 3">
+          <p>{{ text }}</p>
+        </a-collapse-panel>
+      </a-collapse>
     </a-modal>
 
     <!-- 联系人信息 模态框 -->
@@ -319,26 +320,28 @@
             </a-radio-group>
         </div>
       </div>
-      <a-table
-        bordered
-        size="small"
-        :data-source="stateData"
-        rowKey="id"
-        :rowSelection="{
-          selectedRowKeys: selectedRowKeys,
-          onChange: onSelectChange,
-        }"
-        :pagination="false"
-      >
-          <a-table-column key="name" title="姓名" data-index="name" />
-          <a-table-column key="notice" title="是否已通知" data-index="notice" />
-          <a-table-column key="phone" title="联系方式" data-index="phone" />
-          <a-table-column key="detail" title="详情" data-index="detail">
-              <template slot-scope="record">
-                  <a-button type="link">航变详情</a-button>
-              </template>     
-          </a-table-column>
-      </a-table>
+      <div class="table_nav">
+          <a-table
+            bordered
+            size="small"
+            :data-source="stateData"
+            rowKey="id"
+            :rowSelection="{
+              selectedRowKeys: selectedRowKeys,
+              onChange: onSelectChange,
+            }"
+            :pagination="false"
+          >
+              <a-table-column key="name" title="姓名" data-index="name" />
+              <a-table-column key="notice" title="是否已通知" data-index="notice" />
+              <a-table-column key="phone" title="联系方式" data-index="phone" />
+              <a-table-column key="detail" title="详情" data-index="detail">
+                  <template slot-scope="record">
+                      <a-button type="link">航变详情</a-button>
+                  </template>     
+              </a-table-column>
+          </a-table>
+      </div>
 
       <div class="nav">
           <div class="tags"></div>
@@ -347,7 +350,7 @@
       <div class="level">
         <div class="name">备注内容</div>
         <div class="name_type">
-            <a-input placeholder="请输入" />
+            <a-input style="width: 846px; height:96px" placeholder="请输入" />
         </div>
       </div>
       
@@ -356,9 +359,14 @@
           <div class="text">上传附件</div>
       </div>
       <div class="level">
-        <div class="name">附件名称+附件格式（上传后显示）</div>
-        <div class="name_type">
-            <a-input placeholder="添加该附件描述" />
+        <div class="seq">
+          <div class="name">附件名称+附件格式（上传后显示）</div>
+          <div class="name_type">
+              <a-input style="width: 500px; height:34px" placeholder="添加该附件描述" />
+          </div>
+          <div class="name">
+            <a-button>上传附件</a-button>
+          </div>
         </div>
       </div>
     </a-modal>
@@ -378,17 +386,11 @@
           <div class="text">原始信息</div>
       </div>
       <div class="level">
-        <div class="name">是否通知</div>
+        <div class="name">原始信息</div>
         <div class="name_type">
-            <a-radio-group name="radioGroup" :default-value="1">
-              <a-radio :value="1">电话</a-radio>
-              <a-radio :value="2">短信</a-radio>
-              <a-radio :value="3">电子邮件</a-radio>
-              <a-radio :value="4">QQ/QQ群</a-radio>
-              <a-radio :value="5">接口对接</a-radio>
-              <a-radio :value="6">平台录入</a-radio>
-              <a-radio :value="7">无需通知</a-radio>
-            </a-radio-group>
+              <a-card style="width: 800px">
+                <p>内容</p>
+              </a-card>
         </div>
       </div>
 
@@ -396,79 +398,85 @@
           <div class="tags"></div>
           <div class="text">航变信息</div>
       </div>
-      <a-table
-        bordered
-        size="small"
-        :data-source="flightData"
-        rowKey="id"
-        :pagination="false"
-      >
-          <a-table-column key="operate" title="操作" data-index="operate">
-            <template slot-scope="record">
-                <a-tag color="#FB9826"  @click="openEditModal()">修改</a-tag>
-            </template>
-          </a-table-column>
-          <a-table-column key="type" title="航变类型" data-index="type" />
-          <a-table-column key="flight_no" title="原航班号" data-index="flight_no" />
-          <a-table-column key="new_no" title="新航班号" data-index="new_no">
-              <template slot-scope="record">
-                  <a-button type="link">航变详情</a-button>
-              </template>     
-          </a-table-column>
-          <a-table-column key="old_start" title="原起飞时间" data-index="old_start" />
-          <a-table-column key="new_start" title="新起飞时间" data-index="new_start" />
-          <a-table-column key="old_end" title="原到达时间" data-index="old_end" />
-          <a-table-column key="new_end" title="新到达时间" data-index="new_end" />
-          <a-table-column key="message" title="航程信息" data-index="message" />
-      </a-table>
-      
+      <div class="table_nav">
+          <a-table
+            bordered
+            size="middle"
+            :data-source="flightData"
+            rowKey="id"
+            :pagination="false"
+          >
+              <a-table-column key="operate" title="操作" data-index="operate">
+                <template slot-scope="record">
+                    <a-tag color="#FB9826"  @click="openEditModal()">修改</a-tag>
+                </template>
+              </a-table-column>
+              <a-table-column key="type" title="航变类型" data-index="type" />
+              <a-table-column key="flight_no" title="原航班号" data-index="flight_no" />
+              <a-table-column key="new_no" title="新航班号" data-index="new_no">
+                  <template slot-scope="record">
+                      <a-button type="link">航变详情</a-button>
+                  </template>     
+              </a-table-column>
+              <a-table-column key="old_start" title="原起飞时间" data-index="old_start" />
+              <a-table-column key="new_start" title="新起飞时间" data-index="new_start" />
+              <a-table-column key="old_end" title="原到达时间" data-index="old_end" />
+              <a-table-column key="new_end" title="新到达时间" data-index="new_end" />
+              <a-table-column key="message" title="航程信息" data-index="message" />
+          </a-table>
+      </div>
+  
       <div class="nav">
           <div class="tags"></div>
           <div class="text">关联信息</div>
       </div>
-      <a-table
-        bordered
-        size="small"
-        :data-source="relateData"
-        rowKey="id"
-        :pagination="false"
-      >
-          <a-table-column key="contact" title="联系人" data-index="contact"/>
-          <a-table-column key="phone" title="联系人手机号" data-index="phone" />
-          <a-table-column key="channel" title="来源渠道" data-index="channel" />
-          <a-table-column key="order_no" title="外部订单号" data-index="order_no" />  
-          <a-table-column key="sy_no" title="胜意订单号" data-index="sy_no" />
-          <a-table-column key="PNR" title="PNR" data-index="PNR" />
-          <a-table-column key="order_depart" title="订票部门" data-index="order_depart" />
-          <a-table-column key="order_time" title="订票时间" data-index="order_time" />
-          <a-table-column key="ticket_depart" title="出票部门" data-index="ticket_depart" />
-          <a-table-column key="ticket_time" title="出票时间" data-index="ticket_time" />
-          <a-table-column key="arrt_depart" title="归属部门" data-index="arrt_depart" />
-      </a-table>
-
+      <div class="table_nav">
+          <a-table
+            bordered
+            size="middle"
+            :data-source="relateData"
+            rowKey="id"
+            :pagination="false"
+          >
+              <a-table-column key="contact" title="联系人" data-index="contact"/>
+              <a-table-column key="phone" title="联系人手机号" data-index="phone" />
+              <a-table-column key="channel" title="来源渠道" data-index="channel" />
+              <a-table-column key="order_no" title="外部订单号" data-index="order_no" />  
+              <a-table-column key="sy_no" title="胜意订单号" data-index="sy_no" />
+              <a-table-column key="PNR" title="PNR" data-index="PNR" />
+              <a-table-column key="order_depart" title="订票部门" data-index="order_depart" />
+              <a-table-column key="order_time" title="订票时间" data-index="order_time" />
+              <a-table-column key="ticket_depart" title="出票部门" data-index="ticket_depart" />
+              <a-table-column key="ticket_time" title="出票时间" data-index="ticket_time" />
+              <a-table-column key="arrt_depart" title="归属部门" data-index="arrt_depart" />
+          </a-table>
+      </div>
+    
       <div class="nav">
           <div class="tags"></div>
           <div class="text">乘客信息及处理状态</div>
       </div>
-      <a-table
-        bordered
-        size="small"
-        :data-source="relateData"
-        rowKey="id"
-        :pagination="false"
-      >
-          <a-table-column key="contact" title="处理状态" data-index="contact"/>
-          <a-table-column key="phone" title="乘客姓名" data-index="phone" />
-          <a-table-column key="channel" title="票号" data-index="channel" />
-          <a-table-column key="order_no" title="手机号" data-index="order_no" />  
-          <a-table-column key="sy_no" title="电话号码" data-index="sy_no" />
-          <a-table-column key="PNR" title="微信号码" data-index="PNR" />
-          <a-table-column key="order_depart" title="电子邮箱" data-index="order_depart" />
-          <a-table-column key="order_time" title="通知次数" data-index="order_time" />
-          <a-table-column key="ticket_depart" title="有效通知" data-index="ticket_depart" />
-          <a-table-column key="ticket_time" title="日志信息" data-index="ticket_time" />
-    
-      </a-table>
+      <div class="table_nav">
+          <a-table
+            bordered
+            size="middle"
+            :data-source="relateData"
+            rowKey="id"
+            :pagination="false"
+          >
+              <a-table-column key="contact" title="处理状态" data-index="contact"/>
+              <a-table-column key="phone" title="乘客姓名" data-index="phone" />
+              <a-table-column key="channel" title="票号" data-index="channel" />
+              <a-table-column key="order_no" title="手机号" data-index="order_no" />  
+              <a-table-column key="sy_no" title="电话号码" data-index="sy_no" />
+              <a-table-column key="PNR" title="微信号码" data-index="PNR" />
+              <a-table-column key="order_depart" title="电子邮箱" data-index="order_depart" />
+              <a-table-column key="order_time" title="通知次数" data-index="order_time" />
+              <a-table-column key="ticket_depart" title="有效通知" data-index="ticket_depart" />
+              <a-table-column key="ticket_time" title="日志信息" data-index="ticket_time" />
+        
+          </a-table>
+      </div>
     </a-modal>
 
     <!-- 航班类型 - 修改 模态框 -->
@@ -486,17 +494,11 @@
           <div class="text">原始信息</div>
       </div>
       <div class="level">
-        <div class="name">是否通知</div>
+        <div class="name">原始信息</div>
         <div class="name_type">
-            <a-radio-group name="radioGroup" :default-value="1">
-              <a-radio :value="1">电话</a-radio>
-              <a-radio :value="2">短信</a-radio>
-              <a-radio :value="3">电子邮件</a-radio>
-              <a-radio :value="4">QQ/QQ群</a-radio>
-              <a-radio :value="5">接口对接</a-radio>
-              <a-radio :value="6">平台录入</a-radio>
-              <a-radio :value="7">无需通知</a-radio>
-            </a-radio-group>
+            <a-card style="width: 800px">
+              <p>内容</p>
+            </a-card>
         </div>
       </div>
 
@@ -504,41 +506,42 @@
           <div class="tags"></div>
           <div class="text">航变信息</div>
       </div>
-      <a-table
-        bordered
-        size="small"
-        :data-source="flightData"
-        rowKey="id"
-        :pagination="false"
-      >
-          <a-table-column key="operate" title="操作" data-index="operate">
-            <template slot-scope="record">
-                <a-tag color="#FB9826"  @click="openEditModal()">修改</a-tag>
-            </template>
-          </a-table-column>
-          <a-table-column key="type" title="航变类型" data-index="type" />
-          <a-table-column key="flight_no" title="原航班号" data-index="flight_no" />
-          <a-table-column key="new_no" title="新航班号" data-index="new_no">
-              <template slot-scope="record">
-                  <a-button type="link">航变详情</a-button>
-              </template>     
-          </a-table-column>
-          <a-table-column key="old_start" title="原起飞时间" data-index="old_start" />
-          <a-table-column key="new_start" title="新起飞时间" data-index="new_start" />
-          <a-table-column key="old_end" title="原到达时间" data-index="old_end" />
-          <a-table-column key="new_end" title="新到达时间" data-index="new_end" />
-          <a-table-column key="message" title="航程信息" data-index="message" />
-      </a-table>
-      
+      <div class="table_nav">
+          <a-table
+            bordered
+            size="small"
+            :data-source="flightData"
+            rowKey="id"
+            :pagination="false"
+          >
+              <a-table-column key="operate" title="操作" data-index="operate">
+                <template slot-scope="record">
+                    <a-tag color="#FB9826"  @click="openEditModal()">修改</a-tag>
+                </template>
+              </a-table-column>
+              <a-table-column key="type" title="航变类型" data-index="type" />
+              <a-table-column key="flight_no" title="原航班号" data-index="flight_no" />
+              <a-table-column key="new_no" title="新航班号" data-index="new_no">
+                  <template slot-scope="record">
+                      <a-button type="link">航变详情</a-button>
+                  </template>     
+              </a-table-column>
+              <a-table-column key="old_start" title="原起飞时间" data-index="old_start" />
+              <a-table-column key="new_start" title="新起飞时间" data-index="new_start" />
+              <a-table-column key="old_end" title="原到达时间" data-index="old_end" />
+              <a-table-column key="new_end" title="新到达时间" data-index="new_end" />
+              <a-table-column key="message" title="航程信息" data-index="message" />
+          </a-table>
+      </div>
+     
       <div class="nav">
           <div class="tags"></div>
           <div class="text">修改航变信息</div>
       </div>
-      <div class="level">
-        <div class="name">航变类型</div>
-        <div class="name_type">
+      <div class="flight_level">
+        <div class="flight_name">航变类型</div>
+        <div class="flight_name_type">
             <a-select
-             
               placeholder="请输入"
               option-filter-prop="children"
               style="width: 168px"
@@ -549,23 +552,93 @@
             </a-select>
         </div>
       </div>
-      <div class="level_border">
-        <div class="level">
-          <div class="name">航变类型</div>
-          <div class="name_type">
-              <a-select
-                
-                placeholder="请输入"
-                option-filter-prop="children"
-                style="width: 168px"
-                @change="handleChange"
-              >
-                <a-select-option value="1">航班延误</a-select-option>
-                <a-select-option value="2">航班取消</a-select-option>
-              </a-select>
-          </div>
+      
+      <div class="flight_level">
+        <div class="flight_name">取消保护</div>
+        <div class="flight_name_type">
+            <a-select
+              
+              placeholder="请输入"
+              option-filter-prop="children"
+              style="width: 168px"
+              @change="handleChange"
+            >
+              <a-select-option value="1">取消有保护</a-select-option>
+              <a-select-option value="2">取消有保护</a-select-option>
+            </a-select>
         </div>
       </div>
+
+      <div class="flight_level">
+        <div class="flight_name">原航班号</div>
+        <div class="flight_name_type">
+            <a-input style="width: 168px">G54973</a-input>
+        </div>
+      </div>
+
+      <div class="flight_level">
+        <div class="flight_name">新航班号</div>
+        <div class="flight_name_type">
+            <a-input style="width: 168px">G54973</a-input>
+        </div>
+      </div>
+
+      <div class="flight_level">
+        <div class="flight_name">原起飞</div>
+        <div class="flight_name_type">
+            <a-input style="width: 168px">2020-10-23 13:40</a-input>
+        </div>
+      </div>
+
+      <div class="flight_level">
+        <div class="flight_name">新起飞</div>
+        <div class="flight_name_type">
+            <a-input style="width: 168px">2020-10-23 13:40</a-input>
+        </div>
+      </div>
+
+      <div class="flight_level">
+        <div class="flight_name">原到达</div>
+        <div class="flight_name_type">
+            <a-input style="width: 168px">2020-10-23 13:40</a-input>
+        </div>
+      </div>
+
+      <div class="flight_level">
+        <div class="flight_name">新到达</div>
+        <div class="flight_name_type">
+            <a-input style="width: 168px">2020-10-23 13:40</a-input>
+        </div>
+      </div>
+
+      <div class="flight_level">
+        <div class="flight_name">起飞城市</div>
+        <div class="flight_name_type">
+            <a-input style="width: 168px">重庆</a-input>
+        </div>
+      </div>
+
+      <div class="flight_level">
+        <div class="flight_name">起飞三字码</div>
+        <div class="flight_name_type">
+            <a-input style="width: 168px">CKG</a-input>
+        </div>
+      </div>
+
+      <div class="flight_level">
+        <div class="flight_name">到达城市</div>
+        <div class="flight_name_type">
+            <a-input style="width: 168px">延安</a-input>
+        </div>
+      </div>
+
+      <div class="flight_level">
+        <div class="flight_name">到达三字码</div>
+        <div class="flight_name_type">
+            <a-input style="width: 168px">ENY</a-input>
+        </div>
+      </div>
+     
     </a-modal>
   </div>
 </template>
@@ -822,6 +895,7 @@ export default {
   }
 
 }
+
 .passenger_main {
 
     display: flex;
@@ -829,18 +903,21 @@ export default {
     .modal_item {
       display: flex;
       align-items: center;
-      // padding: 10px 68px;
       .item_title {
         font-size: 14px;
         font-weight: 400;
         color: #333333;
         margin-right: 8px;
+        text-align: right;
+        width: 68px;
       }
       .item_input {
         width: 160px;
       }
-    }&:not(:last-child) {
-        margin-bottom: 5px;
+      &:not(:last-child) {
+        margin-bottom: 22px;
+      }
+  
     }
 }
 
@@ -858,7 +935,7 @@ export default {
   flex-shrink: 0;
   height: 32px;
   margin: 16px 16px 16px;
-  background-color: rgba(241, 243, 245, 1);
+  background-color: rgba(0, 112, 226, 0.1);
   .tags {
       width: 4px;
       height: 16px;
@@ -873,47 +950,89 @@ export default {
       margin-top: 4px;
       font-weight: bold;
   }
+  .number {
+    width: 16px;
+    height: 16px;
+    background:rgba(255, 0, 0, 0.6);
+    border-radius: 2px;
+    color: #fff;
+    margin-left: 10px;
+    margin-top: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 
-.level_border {
+.table_nav {
+  flex-shrink: 0;
+  margin: 16px 16px 16px;
+}
   
-  // display: flex;
-  .level {
+.level {
 
   display: flex;
   flex-wrap: wrap;
   .name {
-      
+
     font-size: 14px;
     margin-left: 32px;
   }
   .name_type {
-      
+
+    font-weight: bold;
+    padding-left: 5px;
+  }
+  .seq {
+      width: 996px;
+      margin: 16px 16px 16px;
+      display: flex;
+      height: 128px;
+      border: 1px solid #DFDFDF;
+      border-radius: 2px;
+      .name {
+        
+        color: #333333;
+        font-weight: 400;
+        font-size: 14px;
+        margin: 16px 16px 16px;
+      }
+      .name_type {
+        margin: 16px 16px 16px;
+        font-weight: bold;
+        padding-left: 5px;
+      }
+  }
+}&:not(:last-child) {
+      margin-bottom: 10px;
+}
+
+.level {
+  .ant-btn {
+    border-radius: 15px;
+    border: 1px solid #0070E2;
+    color: #0070e2;
+  }
+}
+
+.flight_level {
+  display: inline-flex;
+  align-items: center;
+  .flight_name {
+
+    font-size: 13px;
+    color: #333333;
+    font-weight: 400;
+    margin-left: 32px;
+    width: 70px;
+    text-align: right;
+  }
+  .flight_name_type {
       font-weight: bold;
       padding-left: 5px;
   }
-  }&:not(:last-child) {
-        margin-bottom: 10px;
-  }
-
+}&:not(:last-child) {
+      margin-bottom: 10px;
 }
-
-// .level {
-
-//   display: flex;
-//   flex-wrap: wrap;
-//   .name {
-      
-//     font-size: 14px;
-//     margin-left: 32px;
-//   }
-//   .name_type {
-      
-//       font-weight: bold;
-//       padding-left: 5px;
-//   }
-// }&:not(:last-child) {
-//         margin-bottom: 10px;
-// }
 </style>
 
