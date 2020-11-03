@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-10-23 14:08:59
- * @LastEditTime: 2020-11-02 10:47:32
+ * @LastEditTime: 2020-11-03 19:51:17
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \positiond:\aerial\yunshang_aerial_change\src\router\index.js
@@ -33,9 +33,9 @@ const routes = [
     component: () => import(/* webpackChunkName: "rule" */ '../views/rule.vue'),
   },
   {
-    path: '/dynamicLibrary',
+    path: '/dynamic',
     name: '公共航变动态库',
-    component: () => import(/* webpackChunkName: "dynamicLibrary" */ '../views/dynamicLibrary.vue'),
+    component: () => import(/* webpackChunkName: "dynamic" */ '../views/dynamic.vue'),
   },
   {
     path: '/notice',
