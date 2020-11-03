@@ -1,7 +1,7 @@
 <!--
  * @Author: mzr
  * @Date: 2020-10-30 14:13:41
- * @LastEditTime: 2020-11-03 15:47:28
+ * @LastEditTime: 2020-11-03 18:59:49
  * @LastEditors: Please set LastEditors
  * @Description: 航变通知
  * @FilePath: \positiond:\aerial\yunshang_aerial_change\src\views\changeNotice.vue
@@ -219,35 +219,83 @@
       @cancel="cancelBtn"
       width="1000px">
       
-      <!-- <div class="nav">
-          <div class="tags"></div>
-          <div class="text">日志信息</div>
-          <div class="number">2</div>
-          <div></div>
+      <!-- 日志 -->
+      <div class="nav_title">
+          <div class="nav" @click="openNavMain('日志')">
+            <div class="tags"></div>
+            <div class="text">日志信息</div>
+            <div class="number">2</div>
+            <div class="operate" v-if="navMainType === '日志'">
+                <div class="action">收起</div>
+                <div class="triangle_bottom"></div>
+            </div>
+            <!-- <div class="operate" v-else-if="navMainType !=== '日志'">
+                <div class="action">展开</div>
+                <div class="triangle_top"></div>
+            </div>  -->
+          </div>
+          <div class="nav_main" v-if="navMainType === '日志'">
+             <div class="nav_table">
+                 <div class="nav_item">邮箱</div>
+                 <div class="nav_item"> 畅游国际平台（赵玲艺）导入</div>
+                 <div class="nav_item">2020-10-23 09:19:13</div>
+             </div>
+             <div class="nav_table">
+                 <div class="nav_item">锁定</div>
+                 <div class="nav_item"> 畅游国际平台（赵玲艺）导入</div>
+                 <div class="nav_item">2020-10-23 09:19:13</div>
+             </div>
+             <div class="nav_table">
+                 <div class="nav_item">邮箱</div>
+                 <div class="nav_item"> 畅游国际平台（赵玲艺）导入</div>
+                 <div class="nav_item">2020-10-23 09:19:13</div>
+             </div>
+          </div>
       </div>
       
-      <div class="nav">
-          <div class="tags"></div>
-          <div class="text">备注信息</div>
-          <div class="number">0</div>
+      <!-- 备注 -->
+      <div class="nav_title">
+          <div class="nav" @click="openNavMain('备注')">
+            <div class="tags"></div>
+            <div class="zuhe">
+              <div class="text">备注信息</div>
+              <div class="number">2</div>
+            </div>
+            <div class="operate" v-if="navMainType === '日志'">
+                <div class="action">展开</div>
+                <div class="triangle_top"></div>
+              </div> 
+          </div>
+          <div class="nav_main" v-if="navMainType === '备注'">
+
+              <div class="nav_table">
+                 <div class="nav_item">邮箱</div>
+                 <div class="nav_item"> 畅游国际平台（赵玲艺）导入</div>
+                 <div class="nav_item">2020-10-23 09:19:13</div>
+              </div>
+              <div class="nav_table">
+                 <div class="nav_item">锁定</div>
+                 <div class="nav_item"> 畅游国际平台（赵玲艺）导入</div>
+                 <div class="nav_item">2020-10-23 09:19:13</div>
+              </div>
+              <div class="nav_table">
+                 <div class="nav_item">邮箱</div>
+                 <div class="nav_item"> 畅游国际平台（赵玲艺）导入</div>
+                 <div class="nav_item">2020-10-23 09:19:13</div>
+              </div>
+
+          </div>
       </div>
 
-      <div class="nav">
-          <div class="tags"></div>
-          <div class="text">附件信息</div>
-          <div class="number">0</div>
-      </div> -->
-      <a-collapse accordion>
-        <a-collapse-panel key="1" header="This is panel header 1">
-          <p>{{ text }}</p>
-        </a-collapse-panel>
-        <a-collapse-panel key="2" header="This is panel header 2" :disabled="false">
-          <p>{{ text }}</p>
-        </a-collapse-panel>
-        <a-collapse-panel key="3" header="This is panel header 3">
-          <p>{{ text }}</p>
-        </a-collapse-panel>
-      </a-collapse>
+      <!-- 附件 -->
+      <div class="nav_title">
+          <div class="nav" @click="openNavMain('附件')">
+            <div class="tags"></div>
+            <div class="text">附件信息</div>
+            <div class="number">2</div>
+          </div>
+          <div class="nav_main" v-if="navMainType === '附件'">3333</div>
+      </div>
     </a-modal>
 
     <!-- 联系人信息 模态框 -->
@@ -711,9 +759,12 @@ export default {
       input_value:'', // 字典值
 
       value: "",
+
+      navMainType: '' // 日志  备注  附件信息
     };
   },
   methods: {
+  
     // 下拉框
     handleChange(value) {
       console.log(`selected ${value}`);
@@ -782,6 +833,11 @@ export default {
       this.stateVisble = false;
       this.detailVisble = false;
       this.editVisble = false;
+    },
+
+     // 日志  备注  附件信息 点击展开收起
+    openNavMain(type){
+      this.navMainType = type
     },
 
   },
@@ -986,10 +1042,16 @@ export default {
 .nav {
 
   display: flex;
-  flex-shrink: 0;
+ 
   height: 32px;
   margin: 16px 16px 16px;
+  justify-content: space-between;
+  
   background-color: rgba(0, 112, 226, 0.1);
+  .zuhe {
+    display: inline-flex;
+    justify-content: flex-start;
+  }
   .tags {
       width: 4px;
       height: 16px;
@@ -1015,6 +1077,45 @@ export default {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+  }
+  .operate {
+    display: flex;
+    .action {
+      display: inline-flex;
+      align-items: flex-end;
+      // margin-right: 10px;
+      color: #0070E2;
+      // margin: 0 16px;
+    }
+  
+    .triangle_top {
+      width: 0;
+      height: 0;
+      border: 6px solid transparent;
+      border-top-color: #0070E2;
+      margin: 10px 10px;
+    }
+    .triangle_bottom {
+      width: 0;
+      height: 0;
+      border: 6px solid transparent;
+      border-bottom-color: #0070E2;
+      margin: 10px 10px;
+    }
+  }
+  
+}
+.nav_main {
+  .nav_table {
+    display: flex;
+    justify-content: space-around;
+    .nav_item {
+     
+      font-size: 14px;
+      font-weight: 400;
+      color: #333333;
+
+    }
   }
 }
 
