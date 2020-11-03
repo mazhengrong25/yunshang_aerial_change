@@ -1,7 +1,7 @@
 <!--
  * @Author: mzr
  * @Date: 2020-10-30 14:13:41
- * @LastEditTime: 2020-11-03 15:02:31
+ * @LastEditTime: 2020-11-03 15:19:53
  * @LastEditors: Please set LastEditors
  * @Description: 航变通知
  * @FilePath: \positiond:\aerial\yunshang_aerial_change\src\views\changeNotice.vue
@@ -138,11 +138,36 @@
                 <a-button type="link" @click="opendetailModal()">航班取消</a-button>
             </template>
         </a-table-column>
-        <a-table-column key="number" title="航班号" data-index="type" />
-        <a-table-column key="start_time" title="起飞时间" data-index="value" />
-        <a-table-column key="end_time" title="到达时间" data-index="isEnable" />
-        <a-table-column key="name" title="航程名称" data-index="isEnable" />
-        <a-table-column key="shop" title="店铺/单号" data-index="isEnable" />
+        <a-table-column key="number" title="航班号" data-index="type">
+          <template slot-scope="record">
+            <p><span>原</span></p>
+            <p><span>新</span></p>
+          </template>
+        </a-table-column>
+        <a-table-column key="start_time" title="起飞时间" data-index="value">
+          <template slot-scope="record">
+            <p><span>原</span></p>
+            <p><span>新</span></p>
+          </template>
+        </a-table-column>
+        <a-table-column key="end_time" title="到达时间" data-index="isEnable">
+          <template slot-scope="record">
+            <p><span>原</span></p>
+            <p><span>新</span></p>
+          </template>
+        </a-table-column>
+        <a-table-column key="name" title="航程名称" data-index="isEnable">
+          <template slot-scope="record">
+            <p><span>原</span></p>
+            <p><span>新</span></p>
+          </template>
+        </a-table-column>
+        <a-table-column key="shop" title="店铺/单号" data-index="isEnable">
+          <template slot-scope="record">
+            <p>去哪儿</p>
+            <p>ysh201021173102866001</p>
+          </template>
+        </a-table-column>
         <a-table-column key="pnr" title="PNR" data-index="isEnable" />
         <a-table-column key="passenger" title="乘客" data-index="isEnable" />
         <a-table-column key="state" title="状态" data-index="isEnable">
@@ -870,6 +895,25 @@ export default {
   }
 
   .table_main {
+    p {
+      margin-bottom: 0;
+      &:not(:last-child){
+        margin-bottom: 8px;
+      }
+      span {
+        width: 17px;
+        height: 17px;
+        font-size: 12px;
+        font-weight: 400;
+        color: #666666;
+        border: 1px solid #ccc;
+        border-radius: 2px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 10px;
+      }
+    }
     .table_pagination {
       margin: 32px 0;
       padding-right: 16px;
