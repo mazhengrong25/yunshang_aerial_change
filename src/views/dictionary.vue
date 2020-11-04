@@ -2,8 +2,8 @@
  * @Description: 数据字典
  * @Author: wish.WuJunLong
  * @Date: 2020-10-27 09:59:47
- * @LastEditTime: 2020-10-28 14:12:12
- * @LastEditors: wish.WuJunLong 
+ * @LastEditTime: 2020-11-04 10:57:00
+ * @LastEditors: Please set LastEditors
 -->
 <template>
   <div class="profit">
@@ -434,6 +434,8 @@ export default {
         font-weight: 400;
         color: #333333;
         margin-right: 8px;
+        width: 70px;
+        text-align: right;
       }
       .item_input {
         width: 240px;
